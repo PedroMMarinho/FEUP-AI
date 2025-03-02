@@ -3,6 +3,6 @@ import pygame
 
 pygame.init()
 INFO = pygame.display.Info()
-WIDTH, HEIGHT = INFO.current_w, INFO.current_h 
+WIDTH, HEIGHT = 1200,920
 FULLSCREEN = False
 FPS = 60

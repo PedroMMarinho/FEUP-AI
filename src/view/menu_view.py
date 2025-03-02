@@ -2,8 +2,11 @@ import pygame
 from settings import WIDTH, HEIGHT
 import view.board_view as board
 
+background = pygame.image.load("docs/yinsh.png")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
 def render_main_menu(screen,buttons):
-    screen.fill((255, 255, 255))
+    screen.blit(background, (0, 0))
     for button in buttons:
         button.draw(screen)
     pygame.display.flip()

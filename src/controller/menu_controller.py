@@ -6,10 +6,10 @@ from settings import WIDTH, HEIGHT
 
 def main_menu(screen):
     buttons = [
-        Button("Play", WIDTH // 3, HEIGHT // 3, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.GAME),
-        Button("Instructions", WIDTH // 3, HEIGHT // 3 + 80, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.INSTRUCTIONS_MENU),
-        Button("Settings", WIDTH // 3, HEIGHT // 3 + 160, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.SETTINGS_MENU),
-        Button("Exit", WIDTH // 3, HEIGHT // 3 + 240, 200, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.EXIT)
+        Button("Play", WIDTH // 2 - 150, HEIGHT // 2 - 100, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.GAME),
+        Button("Instructions", WIDTH // 2 - 150, HEIGHT // 2 - 20, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.INSTRUCTIONS_MENU),
+        Button("Settings", WIDTH // 2 - 150, HEIGHT // 2 + 60, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.SETTINGS_MENU),
+        Button("Exit", WIDTH // 2 - 150, HEIGHT // 2 + 140, 300, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.EXIT)
     ]
 
     running = True
@@ -54,10 +54,6 @@ def settings_menu(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return GameState.MAIN_MENU
-                if event.key == pygame.K_f:
-                    FULLSCREEN = not FULLSCREEN
-                    return GameState.SETTINGS_MENU
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return GameState.MAIN_MENU
     return GameState.SETTINGS_MENU
