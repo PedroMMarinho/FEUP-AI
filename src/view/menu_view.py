@@ -1,6 +1,6 @@
 import pygame
 from settings import WIDTH, HEIGHT
-import view.board_view as board
+import view.board_view as bv
 
 def render_main_menu(screen,buttons):
     screen.fill((255, 255, 255))
@@ -15,12 +15,14 @@ def render_instructions_menu(screen):
     screen.blit(text, (WIDTH//6, HEIGHT//2))
     pygame.display.flip()
 
-def render_game_screen(screen):
+
+def render_game_screen(screen,board,view):
     font = pygame.font.Font(None, 50)
     text = font.render("Game Screen - Press ESC to go back", True, (0, 0, 0))
     screen.fill((255, 255, 255))
     screen.blit(text, (WIDTH - 1500, HEIGHT - 820 ))
-    board.draw_board(screen)
+    view.draw_board(screen,board)
+    
     pygame.display.flip()
 
 
