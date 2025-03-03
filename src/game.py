@@ -1,13 +1,12 @@
 import pygame
-from pygame._sdl2 import Window
 from settings import WIDTH, HEIGHT
 from model.game_state import GameState
 from controller.menu_controller import main_menu, instructions_menu, game_screen_options, game_mode_selection_menu
 import sys
+
 def run_game():
     pygame.init()
-    screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
-    Window.from_display_module().maximize()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT - 50), pygame.RESIZABLE)
     gameState = GameState.MAIN_MENU
     # Load background image
     background = pygame.image.load("src/assets/yinsh.png")

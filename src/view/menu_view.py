@@ -31,6 +31,30 @@ def render_game_mode_selection_menu(screen, buttons, background_image):
     # Render what is needed for the game mode selection menu
     pygame.display.flip()
 
+def render_ai_vs_ai_menu(screen, difficulty_buttons_bot1, difficulty_buttons_bot2 ,background_image, other_buttons):
+    screen.blit(background_image, (0, 0))
+    font = pygame.font.Font(None, 50)
+    text = font.render("Choose the first AI difficulty", True, (0, 0, 0))
+    bg_rect = text.get_rect(center=(WIDTH // 2, HEIGHT - 650))
+    pygame.draw.rect(screen, (255, 255, 255, 150), bg_rect.inflate(20, 10))  
+
+    screen.blit(text, bg_rect)
+
+    text = font.render("Choose the second AI difficulty", True, (0, 0, 0))
+    bg_rect = text.get_rect(center=(WIDTH // 2, HEIGHT - 450))
+    pygame.draw.rect(screen, (255, 255, 255, 150), bg_rect.inflate(20, 10))  
+
+    screen.blit(text, bg_rect)
+    for button in difficulty_buttons_bot1:
+        button.draw(screen)
+    for button in difficulty_buttons_bot2:
+        button.draw(screen)
+    for button in other_buttons:
+        button.draw(screen)
+    
+    # Render what is needed for the AI vs AI menu
+    pygame.display.flip()
+
 def render_ai_vs_human_menu(screen, buttons, background_image, other_buttons):
     screen.blit(background_image, (0, 0))
     font = pygame.font.Font(None, 50)
