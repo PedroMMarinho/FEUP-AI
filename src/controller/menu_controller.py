@@ -1,21 +1,21 @@
 import pygame
 from model.button import Button
 from model.game_state import GameState
-from view.menu_view import render_main_menu, render_instructions_menu, render_game_screen, render_settings_menu
+from view.menu_view import render_main_menu, render_instructions_menu, render_game_screen
 from settings import WIDTH, HEIGHT
 from model.board import Board
 from view.board_view import BoardView
 
-def main_menu(screen):
+def main_menu(screen,background_image):
     buttons = [
-        Button("Play", WIDTH // 3, HEIGHT // 3, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.GAME),
-        Button("Instructions", WIDTH // 3, HEIGHT // 3 + 80, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.INSTRUCTIONS_MENU),
-        Button("Settings", WIDTH // 3, HEIGHT // 3 + 160, 200, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.SETTINGS_MENU),
-        Button("Exit", WIDTH // 3, HEIGHT // 3 + 240, 200, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.EXIT)
+        Button("Play", WIDTH // 2 - 125, HEIGHT // 3 , 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.GAME_MODE_SELECTION),
+        Button("Instructions", WIDTH // 2 - 125, HEIGHT // 3 + 80, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.INSTRUCTIONS_MENU),
+        #Button("Exit", WIDTH // 2 - 125, HEIGHT // 3 + 160, 300, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.EXIT),
     ]
     running = True
+    pygame.event.clear()
     while running:
-        render_main_menu(screen, buttons)
+        render_main_menu(screen, buttons, background_image)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
@@ -25,18 +25,35 @@ def main_menu(screen):
     
     return GameState.MAIN_MENU
 
-def instructions_menu(screen):
+def instructions_menu(screen,background_image):
+    button_width = 250
+    button_height = 60 
+
+    buttons = [
+        Button(
+            "Go Back",
+            70,  
+            HEIGHT - button_height - 100,  
+            button_width,
+            button_height,
+            (200, 0, 0),
+            (255, 0, 0),
+            lambda: GameState.MAIN_MENU,
+        ),
+    ]
     running = True
+    pygame.event.clear()
     while running:
-        render_instructions_menu(screen)
+        render_instructions_menu(screen,buttons,background_image)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return GameState.MAIN_MENU
+            for button in buttons:
+                if button.is_clicked(event):
+                    return button.action()
     return GameState.INSTRUCTIONS_MENU
 
-def game_screen(screen):
+def game_screen(screen, mode):
     running = True
     board = Board()
     view = BoardView(board)
@@ -47,21 +64,37 @@ def game_screen(screen):
                 return GameState.EXIT
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return GameState.MAIN_MENU
+        # Handle Mode
+        match mode:
+            case "human_human":
+                pass
+            case "ai_human":
+                pass
+            case "ai_ai":
+                pass
+            case _:
+                pass
+        
     return GameState.GAME
 
 
-def settings_menu(screen):
-    global FULLSCREEN
+def game_mode_selection_menu(screen, background_image):
+    buttons = [
+        Button("Player vs Player", WIDTH // 2 - 125, HEIGHT // 3, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.HUMAN_HUMAN),
+        Button("AI vs Human", WIDTH // 2 - 125, HEIGHT // 3 + 80, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.AI_HUMAN),
+        Button("AI vs AI", WIDTH // 2 - 125, HEIGHT // 3 + 160, 300, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.AI_AI),
+        Button("Back", WIDTH // 2 - 125, HEIGHT // 3 + 240, 300, 60, (100, 100, 100), (150, 150, 150), lambda: GameState.MAIN_MENU),
+    ]
+
     running = True
+    pygame.event.clear()
     while running:
-        render_settings_menu(screen)
+        render_main_menu(screen, buttons, background_image)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return GameState.MAIN_MENU
-                if event.key == pygame.K_f:
-                    FULLSCREEN = not FULLSCREEN
-                    return GameState.SETTINGS_MENU
-    return GameState.SETTINGS_MENU
+            for button in buttons:
+                if button.is_clicked(event):
+                    return button.action()
+    
+    return GameState.GAME_MODE_SELECTION
