@@ -23,3 +23,17 @@ def render_game_screen(screen,board,view):
     view.draw_board(screen,board)
     pygame.display.flip()
 
+
+def render_game_mode_selection_menu(screen, buttons, background_image):
+    screen.blit(background_image, (0, 0))
+    for button in buttons:
+        button.draw(screen)
+    # Render what is needed for the game mode selection menu
+    pygame.display.flip()
+
+def render_ai_vs_human_menu(screen, buttons, background_image):
+    screen.blit(background_image, (0, 0))
+    for button in buttons:
+        button.draw(screen)
+    # Render what is needed for the AI vs Human menu
+    pygame.display.flip()

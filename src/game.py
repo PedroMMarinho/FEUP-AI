@@ -2,7 +2,7 @@ import pygame
 from pygame._sdl2 import Window
 from settings import WIDTH, HEIGHT
 from model.game_state import GameState
-from controller.menu_controller import main_menu, instructions_menu, game_screen, game_mode_selection_menu
+from controller.menu_controller import main_menu, instructions_menu, game_screen_options, game_mode_selection_menu
 import sys
 def run_game():
     pygame.init()
@@ -22,11 +22,11 @@ def run_game():
             case GameState.GAME_MODE_SELECTION:
                 gameState = game_mode_selection_menu(screen, background_image)  # NEW FUNCTION
             case GameState.HUMAN_HUMAN:
-                gameState = game_screen(screen, mode="human_human")  
+                gameState = game_screen_options(screen, mode="human_human")  
             case GameState.AI_HUMAN:
-                gameState = game_screen(screen, mode="ai_human")
+                gameState = game_screen_options(screen, mode="ai_human")
             case GameState.AI_AI:
-                gameState = game_screen(screen, mode="ai_ai")
+                gameState = game_screen_options(screen, mode="ai_ai")
             case GameState.EXIT:
                 running = False
     
