@@ -1,5 +1,5 @@
 import pygame
-from model.button import Button
+from model.button import Button, ToggleButton
 from model.game_state import GameState
 from view.menu_view import render_main_menu, render_instructions_menu, render_game_screen, render_game_mode_selection_menu, render_ai_vs_human_menu
 from settings import WIDTH, HEIGHT
@@ -69,27 +69,34 @@ def game_screen(screen, mode):
     return GameState.GAME
 
 def ai_human_menu(screen, background_image):
-    buttons = [
-        Button("Easy", WIDTH // 2 - 125, HEIGHT // 3, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.AI_HUMAN),
-        Button("Medium", WIDTH // 2 - 125, HEIGHT // 3 + 80, 300, 60, (0, 100, 200), (0, 150, 255), lambda: GameState.AI_HUMAN),
-        Button("Hard", WIDTH // 2 - 125, HEIGHT // 3 + 160, 300, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.AI_HUMAN),
-        Button("Back", WIDTH // 2 - 125, HEIGHT // 3 + 240, 300, 60, (100, 100, 100), (150, 150, 150), lambda: GameState.GAME_MODE_SELECTION),
+    difficulty_buttons = [
+        ToggleButton("Easy", 100, 300, 200, 60, (0, 200, 0), (0, 255, 0), (0, 150, 0), None),
+        ToggleButton("Medium", 320, 300, 200, 60, (200, 200, 0), (255, 255, 0), (150, 150, 0), None),
+        ToggleButton("Hard", 540, 300, 200, 60, (200, 0, 0), (255, 0, 0), (150, 0, 0), None),
     ]
+
+    # Assign group reference so buttons can deselect each other
+    for button in difficulty_buttons:
+        button.group = difficulty_buttons
+
     running = True
     pygame.event.clear()
     while running:
-        render_ai_vs_human_menu(screen, buttons, background_image)
+        render_ai_vs_human_menu(screen, difficulty_buttons, background_image)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
-            for button in buttons:
-                if button.is_clicked(event):
-                    return button.action()
-    
+            
+            # Handle clicks on difficulty buttons
+            for button in difficulty_buttons:
+                button.is_clicked(event)
+
     return GameState.GAME_MODE_SELECTION
 
 
-def game_screen_options(screen, mode):
+
+def game_screen_options(screen, background_image ,mode):
     running = True
     while running:
         for event in pygame.event.get():
@@ -100,8 +107,7 @@ def game_screen_options(screen, mode):
             case "human_human":
                 return game_screen(screen, mode)
             case "ai_human":
-                # Call the function to choose the AI difficulty
-                pass
+                return ai_human_menu(screen, background_image)
             case "ai_ai":
                 # Call the function to choose the AI difficulty
                 pass

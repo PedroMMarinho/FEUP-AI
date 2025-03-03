@@ -22,11 +22,11 @@ def run_game():
             case GameState.GAME_MODE_SELECTION:
                 gameState = game_mode_selection_menu(screen, background_image)  # NEW FUNCTION
             case GameState.HUMAN_HUMAN:
-                gameState = game_screen_options(screen, mode="human_human")  
+                gameState = game_screen_options(screen, background_image ,mode="human_human")  
             case GameState.AI_HUMAN:
-                gameState = game_screen_options(screen, mode="ai_human")
+                gameState = game_screen_options(screen, background_image, mode="ai_human")
             case GameState.AI_AI:
-                gameState = game_screen_options(screen, mode="ai_ai")
+                gameState = game_screen_options(screen, background_image, mode="ai_ai")
             case GameState.EXIT:
                 running = False
     
