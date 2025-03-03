@@ -1,8 +1,8 @@
 import pygame
-from model.button import Button, ToggleButton
+from model.button import Button, ToggleButton, SwitchButton
 from model.game_state import GameState
 from view.menu_view import render_main_menu, render_instructions_menu, render_game_screen, render_game_mode_selection_menu, render_ai_vs_human_menu, render_ai_vs_ai_menu
-from settings import WIDTH, HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, GREY, LIGHT_GREY, RED, LIGHT_RED, GREEN, LIGHT_GREEN, YELLOW, LIGHT_YELLOW
+from settings import WIDTH, HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, GREY, LIGHT_GREY, RED, LIGHT_RED, GREEN, LIGHT_GREEN, YELLOW, LIGHT_YELLOW, BLACK
 from model.board import Board
 from view.board_view import BoardView
 
@@ -54,9 +54,10 @@ def instructions_menu(screen,background_image):
 def game_screen(screen, mode, botDifficulty1=None, botDifficulty2=None, pieces=None):
     board = Board()
     view = BoardView(board)
-    print(mode)
-    print(botDifficulty1)
-    print(botDifficulty2)
+    print(f"Mode {mode}" )
+    print(f"Bot1 {botDifficulty1}")
+    print(f"Bot2 {botDifficulty2}")
+    print(f"Pieces {pieces}")
 
     while True:
         render_game_screen(screen, board, view)
@@ -75,19 +76,24 @@ def ai_human_menu(screen, background_image):
 
     other_buttons = [
         Button("Go Back", 70, HEIGHT - BUTTON_HEIGHT - 100, BUTTON_WIDTH, BUTTON_HEIGHT, GREY, LIGHT_GREY, lambda: GameState.GAME_MODE_SELECTION),
-        Button("Play", WIDTH // 2 - 125, HEIGHT - 400, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, lambda: GameState.GAME),
+        Button("Play", WIDTH // 2 - 125, HEIGHT - 200, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, lambda: GameState.GAME),
     ]
 
+    switch_button = SwitchButton("Black Pieces", "White Pieces", WIDTH // 2 - 125, HEIGHT // 2 + 30, BUTTON_WIDTH, BUTTON_HEIGHT)
+    
     # Assign group reference so buttons can deselect each other
     for button in difficulty_buttons:
         button.group = difficulty_buttons
 
     while True:
-        render_ai_vs_human_menu(screen, difficulty_buttons, background_image, other_buttons)
+        render_ai_vs_human_menu(screen, difficulty_buttons, background_image, other_buttons, switch_button)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return GameState.EXIT
             
+            switch_button.handle_click(event)
+          
+
             # Handle clicks on difficulty buttons
             for button in difficulty_buttons:
                 button.is_clicked(event)
@@ -98,7 +104,7 @@ def ai_human_menu(screen, background_image):
                     if other_b.action() == GameState.GAME:
                         for button in difficulty_buttons:
                             if button.active:
-                                return game_screen(screen, "ai_human", button.text)
+                                return game_screen(screen, "ai_human", button.text,None, switch_button.selected_piece)
                     else:
                         return other_b.action()
 

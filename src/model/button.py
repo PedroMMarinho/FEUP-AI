@@ -79,3 +79,64 @@ class ToggleButton:
             self.active = True
             return True
         return False
+
+
+
+
+class SwitchButton:
+    def __init__(self, text_black, text_white, x, y, width, height):
+        self.text_black = text_black  
+        self.text_white = text_white  
+        self.text = text_black        
+        self.rect = pygame.Rect(x, y, width, height)
+        self.font = pygame.font.Font(None, 50)
+        self.selected_piece = "black"  
+
+        self.black_background = (0, 0, 0)  
+        self.white_background = (255, 255, 255)  
+        self.black_text = (255, 255, 255)  
+        self.white_text = (0, 0, 0)  
+
+    def draw(self, screen):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hovered = self.rect.collidepoint(mouse_pos)
+
+        # Set the current button colors based on the state
+        if self.selected_piece == "black":
+            current_background = self.black_background
+            current_text = self.black_text
+        else:
+            current_background = self.white_background
+            current_text = self.white_text
+
+        # Change color on hover
+        if is_hovered:
+            current_background = (30, 30, 30) if self.selected_piece == "black" else (230, 230, 230)
+            current_text = (255, 255, 255) if self.selected_piece == "black" else (0, 0, 0)
+
+        # Draw shadow for a cleaner look
+        shadow_offset = 5
+        shadow_rect = self.rect.move(shadow_offset, shadow_offset)
+        pygame.draw.rect(screen, (50, 50, 50), shadow_rect, border_radius=10)
+
+        # Draw the button itself
+        pygame.draw.rect(screen, current_background, self.rect, border_radius=10)
+
+        # Draw the text on the button
+        text_surf = self.font.render(self.text, True, current_text)
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        screen.blit(text_surf, text_rect)
+
+    def handle_click(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos):
+            # Toggle the state on click
+            if self.selected_piece == "black":
+                self.selected_piece = "white"
+                self.text = self.text_white
+            else:
+                self.selected_piece = "black"
+                self.text = self.text_black
+
+            self.selected_piece = self.selected_piece
+
+

@@ -55,11 +55,17 @@ def render_ai_vs_ai_menu(screen, difficulty_buttons_bot1, difficulty_buttons_bot
     # Render what is needed for the AI vs AI menu
     pygame.display.flip()
 
-def render_ai_vs_human_menu(screen, buttons, background_image, other_buttons):
+def render_ai_vs_human_menu(screen, buttons, background_image, other_buttons,switch_button):
     screen.blit(background_image, (0, 0))
     font = pygame.font.Font(None, 50)
     text = font.render("Choose the AI difficulty", True, (0, 0, 0))
     bg_rect = text.get_rect(center=(WIDTH // 2, HEIGHT - 650))
+    pygame.draw.rect(screen, (255, 255, 255, 150), bg_rect.inflate(20, 10))  # Semi-transparent black
+
+    screen.blit(text, bg_rect)
+
+    text = font.render("Choose your piece color", True, (0, 0, 0))
+    bg_rect = text.get_rect(center=(WIDTH // 2, HEIGHT - 450))
     pygame.draw.rect(screen, (255, 255, 255, 150), bg_rect.inflate(20, 10))  # Semi-transparent black
 
     screen.blit(text, bg_rect)
@@ -68,5 +74,7 @@ def render_ai_vs_human_menu(screen, buttons, background_image, other_buttons):
         
     for button in other_buttons:
         button.draw(screen)
-    # Render what is needed for the AI vs Human menu
+
+    switch_button.draw(screen)
+
     pygame.display.flip()
