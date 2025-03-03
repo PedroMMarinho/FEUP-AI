@@ -20,7 +20,7 @@ def run_game():
             case GameState.INSTRUCTIONS_MENU:
                 gameState = instructions_menu(screen,background_image)
             case GameState.GAME_MODE_SELECTION:
-                gameState = game_mode_selection_menu(screen, background_image)  # NEW FUNCTION
+                gameState = game_mode_selection_menu(screen, background_image)  
             case GameState.HUMAN_HUMAN:
                 gameState = game_screen_options(screen, background_image ,mode="human_human")  
             case GameState.AI_HUMAN:

@@ -34,8 +34,6 @@ class Button:
 
 
 
-import pygame
-
 class ToggleButton:
     def __init__(self, text, x, y, width, height, color, hover_color, active_color, group):
         self.text = text
@@ -56,8 +54,19 @@ class ToggleButton:
         else:
             current_color = self.color  # Default color
 
+        # Draw shadow
+        shadow_offset = 5
+        shadow_rect = self.rect.move(shadow_offset, shadow_offset)
+        pygame.draw.rect(screen, (50, 50, 50), shadow_rect, border_radius=10)
+
+        # Draw button
         pygame.draw.rect(screen, current_color, self.rect, border_radius=10)
-        
+
+        # Draw border if selected
+        if self.active:
+            pygame.draw.rect(screen, (0, 0, 0), self.rect, width=4, border_radius=10)  # White border when active
+
+        # Draw text
         text_surf = self.font.render(self.text, True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
