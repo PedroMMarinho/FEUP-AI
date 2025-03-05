@@ -1,11 +1,9 @@
 import pygame
 from model.button import Button, ToggleButton, SwitchButton
 from model.game_state import GameState
-from view.menu_view import render_main_menu, render_instructions_menu, render_game_screen, render_game_mode_selection_menu, render_ai_vs_human_menu, render_ai_vs_ai_menu
+from view.menu_view import render_main_menu, render_instructions_menu, render_game_mode_selection_menu, render_ai_vs_human_menu, render_ai_vs_ai_menu
 from settings import WIDTH, HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, GREY, LIGHT_GREY, RED, LIGHT_RED, GREEN, LIGHT_GREEN, YELLOW, LIGHT_YELLOW, BLACK
-from model.board import Board
-from view.board_view import BoardView
-
+from controller.game_controller import game_screen
 
 
 def main_menu(screen,background_image):
@@ -51,21 +49,7 @@ def instructions_menu(screen,background_image):
                     return button.action()
 
 
-def game_screen(screen, mode, botDifficulty1=None, botDifficulty2=None, pieces=None):
-    board = Board()
-    view = BoardView(board)
-    print(f"Mode {mode}" )
-    print(f"Bot1 {botDifficulty1}")
-    print(f"Bot2 {botDifficulty2}")
-    print(f"Pieces {pieces}")
 
-    while True:
-        render_game_screen(screen, board, view)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return GameState.EXIT
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return GameState.MAIN_MENU
         
 def ai_human_menu(screen, background_image):
     difficulty_buttons = [
@@ -111,7 +95,7 @@ def ai_human_menu(screen, background_image):
 
 
 
-def game_screen_options(screen, background_image ,mode):
+def game_options(screen, background_image ,mode):
     
     while True:
         for event in pygame.event.get():
