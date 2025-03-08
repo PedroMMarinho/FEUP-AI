@@ -12,7 +12,7 @@ def main_menu(screen,background_image):
         Button("Instructions", WIDTH // 2 - 125, HEIGHT // 3 + 80, BUTTON_WIDTH, BUTTON_HEIGHT, BLUE, LIGHT_BLUE, lambda: GameState.INSTRUCTIONS_MENU),
         Button("Exit", WIDTH // 2 - 125, HEIGHT // 3 + 160, 300, 60, (200, 0, 0), (255, 0, 0), lambda: GameState.EXIT),
     ]
-    
+        
     while True:
         render_main_menu(screen, buttons, background_image)
         for event in pygame.event.get():
@@ -24,8 +24,6 @@ def main_menu(screen,background_image):
     
 
 def instructions_menu(screen,background_image):
-
-
     buttons = [
         Button(
             "Go Back",
@@ -122,7 +120,12 @@ def ai_ai_menu(screen, background_image):
 
     difficulty_buttons_bot2 = [
         ToggleButton("Easy", WIDTH // 2 - 320, 500, 200, BUTTON_HEIGHT, GREEN, LIGHT_GREEN, (0, 150, 0), None),
-        ToggleButton("Medium", WIDTH // 2 - 80 , 500, 200, BUTTON_HEIGHT, YELLOW, LIGHT_YELLOW, (150, 150, 0), None),
+        ToggleButif event.type == pygame.QUIT:
+                return GameState.EXIT
+            for button in buttons:
+                if button.is_clicked(event):
+                    return button.action()
+    ton("Medium", WIDTH // 2 - 80 , 500, 200, BUTTON_HEIGHT, YELLOW, LIGHT_YELLOW, (150, 150, 0), None),
         ToggleButton("Hard", WIDTH // 2 + 1 + 160,500, 200, BUTTON_HEIGHT, RED, LIGHT_RED, (150, 0, 0), None),
     ]
 

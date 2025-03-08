@@ -140,3 +140,25 @@ class SwitchButton:
             self.selected_piece = self.selected_piece
 
 
+class GameButton:
+    def __init__(self, type, x, y, color, hover_color, action):
+        self.rect = pygame.Rect(x - self.radius, y - self.radius, self.radius * 2, self.radius * 2)
+        self.pos = (x,y)
+        self.radius = 10 if type == "marker" else 12 
+        self.color = color
+        self.hover_color = hover_color
+        self.action = action
+
+    def draw(self, screen):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hovered = self.rect.collidepoint(mouse_pos)
+        current_color = self.hover_color if is_hovered else self.color
+        if self.type == 'marker':
+            pygame.draw.circle(screen,current_color,self.pos,self.radius)
+        elif self.type == 'ring':
+            pygame.draw.circle(screen,current_color,self.pos,self.radius,4)
+
+    def is_clicked(self, event):
+        return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos)
+
+

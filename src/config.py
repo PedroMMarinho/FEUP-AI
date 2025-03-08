@@ -1,0 +1,14 @@
+# config.py
+
+# Screen settings
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 900
+FPS = 60
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+
+BUTTONS_WIDTH = 300
+BUTTONS_HEIGHT = 60
