@@ -57,7 +57,7 @@ class Board:
             for col in range(self.sizeX):
                 x, y = self.matrix_position_to_pixel(row, col)
                 if self.matrix[row][col] != -1:
-                    vertices[(x, y)] = (row, col)
+                    vertices[(x, y)] = (col, row)
         return vertices
 
     
@@ -74,45 +74,47 @@ class Board:
 
     def perform_move(self,startPos,endPos, player):
 
-        startPosMatrix = self.vertices[startPos]
+        (colStartMatrix, rowStartMatrix) = self.vertices[startPos]
 
-        if BoardPhase.PREP:
-            self.place_piece(startPosMatrix,player+2)
+        if self.phase == BoardPhase.PREP:
+            self.place_piece((rowStartMatrix, colStartMatrix),player+2)
             if player == 1:
                 self.num_rings1 += 1
             else:
                 self.num_rings2 += 1
         
-        elif BoardPhase.GAME:
+        elif self.phase == BoardPhase.GAME:
             if self.marker_placed:
-                (startPosX, startPosY) = startPos
-                (endPosX,endPosY) = endPos
-                (vectorX,vectorY) = (endPosX -startPosX, endPosY - startPosY) # determine direction of move
-                if vectorX == 0: 
-                    vectorY = vectorY / abs(vectorY)
-                else: 
-                    (vectorX,vectorY) = (vectorX / abs(vectorX), vectorY / abs(vectorY))
-                
-                x = startPosX + vectorX
-                y = startPosY + vectorY 
+                (colEndMatrix, rowEndMatrix) = self.vertices[endPos]
 
-                while x != endPosX and y != endPosY:
-                    if self.matrix[x][y] != BoardSpaceType.EMPTY.value: 
-                        self.place_piece((x,y),3- self.matrix[x][y]) # flip
+                (vectorX,vectorY) = (colEndMatrix -colStartMatrix, rowEndMatrix - rowStartMatrix) # determine direction of move
+                if vectorX == 0: 
+                    vectorY = vectorY // abs(vectorY)
+                else: 
+                    (vectorX,vectorY) = (vectorX // abs(vectorX), vectorY // abs(vectorY))
                 
-                self.place_piece(endPos,player+2)
+                x = colStartMatrix + vectorX
+                y = rowStartMatrix + vectorY 
+
+                while x != colEndMatrix or y != rowEndMatrix:
+                    if self.matrix[y][x] != BoardSpaceType.EMPTY.value: 
+                        self.place_piece((y,x),3- self.matrix[y][x]) # flip
+                    x += vectorX
+                    y += vectorY
+
+                self.place_piece((rowEndMatrix, colEndMatrix),player+2)
             else:
-                self.place_piece(startPosMatrix,player)
+                self.place_piece((rowStartMatrix, colStartMatrix),player)
 
     def valid_moves(self, player):
-        print(self.phase)
         moves = []
         if (self.phase == BoardPhase.PREP and self.num_rings1 == 5 and self.num_rings2 == 5):
             self.phase = BoardPhase.GAME
+
         if self.phase == BoardPhase.GAME and self.marker_placed:
             moves = self.get_ring_moves()
         else:
-            for (x,y), (row, col) in self.vertices.items():
+            for (x,y), (col, row) in self.vertices.items():
                 if self.phase == BoardPhase.PREP and self.matrix[row][col] == BoardSpaceType.EMPTY.value:
                     moves.append((x,y))
                 elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value and player == 1 and not self.marker_placed:
@@ -133,34 +135,50 @@ class Board:
         
 
     def get_ring_moves_direction(self,vector):
-        (ringPosX, ringPosY ) = self.ring_pos
+        (ringPosX, ringPosY) = self.ring_pos
+        (ringPosXMatrix, ringPosYMatrix) = self.vertices[(ringPosX, ringPosY)]
         (vectorX, vectorY ) = vector
+        print(f"Vector {vector} --- rinnBegin {ringPosXMatrix, ringPosYMatrix}")
         jumped = False
-        x = ringPosX + vectorX
-        y = ringPosY + vectorY
+        x = ringPosXMatrix + vectorX
+        y = ringPosYMatrix + vectorY
         moves = []
         while x >= 0 and y>= 0 and x < self.sizeX and y < self.sizeY:
-            if self.matrix[x][y] == BoardSpaceType.INVALID.value: 
+            if self.matrix[y][x] == BoardSpaceType.INVALID.value: 
                 break
-            if self.matrix[x][y] == BoardSpaceType.PLAYER1_RING.value or self.matrix[x][y] == BoardSpaceType.PLAYER2_RING.value:
+            if self.matrix[y][x] == BoardSpaceType.PLAYER1_RING.value or self.matrix[y][x] == BoardSpaceType.PLAYER2_RING.value:
                 break
-            if self.matrix[x][y] == BoardSpaceType.EMPTY.value:
-                moves.append((x,y))
+            if self.matrix[y][x] == BoardSpaceType.EMPTY.value:
+                posX, posY = self.matrix_position_to_pixel(y,x)
+                print(f"Matrix: [{y}, {x}] | Pos: ({posX}, {posY})")
+                moves.append((posX, posY))
                 if jumped:
                     break
-            if self.matrix[x][y] == BoardSpaceType.PLAYER1_MARKER.value or self.matrix[x][y] == BoardSpaceType.PLAYER2_MARKER.value:
+            if self.matrix[y][x] == BoardSpaceType.PLAYER1_MARKER.value or self.matrix[y][x] == BoardSpaceType.PLAYER2_MARKER.value:
                 jumped = True
-            x = ringPosX + vectorX
-            y = ringPosY + vectorY
+            x = x + vectorX
+            y = y + vectorY
         return moves
                 
 
     def draw(self, screen):
-        for (x,y), (row, col) in self.vertices.items():
+        for (x,y), (col, row) in self.vertices.items():
             for (dx, dy) in [(-1, 1), (0,-2),(0,2), (1,-1), (-1,-1), (1,1) ]:
                         x2, y2 = self.matrix_position_to_pixel(row+dy,col+dx)
                         if (x2,y2) in self.vertices:
                             pygame.draw.line(screen, BLACK, (x, y), (x2, y2), 2)
+
+            if self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value:
+                pygame.draw.circle(screen, (0, 0, 255), (x, y), 12, 4)
+
+            elif self.matrix[row][col] == BoardSpaceType.PLAYER1_MARKER.value:
+                pygame.draw.circle(screen, (0, 0, 255), (x, y), 12)
+
+            elif self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value:
+                pygame.draw.circle(screen, (255, 0, 0), (x, y), 12, 4)
+
+            elif self.matrix[row][col] == BoardSpaceType.PLAYER2_MARKER.value:
+                pygame.draw.circle(screen, (255, 0, 0), (x, y), 12)
 
         '''
         # Second pass: Draw all edges

@@ -10,13 +10,13 @@ class GameState(State):
         self.board = Board() 
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
-        print(self.valid_moves)
 
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             for (valid_x,valid_y) in self.valid_moves:
                 if self.is_within_hitbox(x, y, valid_x, valid_y):
+                    print(valid_x,valid_y)
                     if self.board.phase == BoardPhase.PREP:
                         self.board.perform_move((valid_x,valid_y), (0,0), self.player)
                         self.change_player()
