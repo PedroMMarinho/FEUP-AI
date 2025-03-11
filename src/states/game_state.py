@@ -10,8 +10,10 @@ class GameState(State):
         self.board = Board() 
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
+        self.valid_ring_moves = []
 
     def handle_events(self, event):
+        self.valid_ring_moves = []
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             for (valid_x,valid_y) in self.valid_moves:
@@ -24,6 +26,7 @@ class GameState(State):
                         if not self.board.marker_placed:
                             self.board.perform_move((valid_x,valid_y), (0,0), self.player)
                             self.board.marker_placed = True
+                            self.board.num_markers -= 1
                             self.board.ring_pos = (valid_x,valid_y)
                         else:
                             self.board.perform_move(self.board.ring_pos, (valid_x,valid_y), self.player)
@@ -32,11 +35,19 @@ class GameState(State):
                             self.change_player()
                     break
             self.valid_moves = self.board.valid_moves(self.player)
+        if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME and not self.board.marker_placed:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            for (valid_x,valid_y) in self.valid_moves:
+                if self.is_within_hitbox(mouse_x, mouse_y, valid_x, valid_y):
+                    self.board.ring_pos = (valid_x,valid_y)
+                    self.valid_ring_moves = self.board.get_ring_moves()
 
     def draw(self):
         self.board.draw(self.game.screen)
         for x, y in self.valid_moves:
             pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,4)
+        for x, y in self.valid_ring_moves:
+            pygame.draw.circle(self.game.screen, (0, 255, 255), (x, y), 12 ,4)
 
     def is_within_hitbox(self, mouse_x, mouse_y, piece_x, piece_y):
         """

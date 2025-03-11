@@ -25,6 +25,7 @@ class Board:
         self.phase = BoardPhase.PREP
         self.num_rings1 = 0
         self.num_rings2 = 0
+        self.num_markers = 51
         self.marker_placed = False
         self.ring_pos = None
 
