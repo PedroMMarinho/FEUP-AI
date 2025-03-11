@@ -16,10 +16,9 @@ class MainMenuState(State):
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             if self.play_button.collidepoint(x, y):
-                self.game.change_state("game")  
+                self.game.change_state("options")  
             elif self.instructions_button.collidepoint(x, y):
-                pass
-                # self.game.change_state("instructions")
+                self.game.change_state("instructions")
             elif self.exit_button.collidepoint(x, y):
                 self.game.running = False
 

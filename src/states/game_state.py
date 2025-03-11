@@ -2,15 +2,17 @@ import pygame
 import math
 from states.state import State
 from board import Board, BoardPhase
+from mode import GameMode
 
 class GameState(State):
 
-    def __init__(self, game):
+    def __init__(self, game , mode ,board):
         super().__init__(game)
-        self.board = Board() 
+        self.board = board
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
         self.valid_ring_moves = []
+        self.game_mode = mode
 
     def handle_events(self, event):
         self.valid_ring_moves = []
