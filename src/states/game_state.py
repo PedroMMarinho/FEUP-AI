@@ -6,10 +6,10 @@ from mode import GameMode
 
 class GameState(State):
 
-    def __init__(self, game , mode ,board):
+    def __init__(self, game , mode ,board, player=1,bot1_difficulty=None, bot2_difficulty=None):
         super().__init__(game)
         self.board = board
-        self.player = 1
+        self.player = player
         self.valid_moves = self.board.valid_moves(self.player)
         self.valid_ring_moves = []
         self.game_mode = mode

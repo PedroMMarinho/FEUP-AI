@@ -22,7 +22,7 @@ class InstructionsState(State):
 
         # Title
         title_text = "YINSH: Game Instructions"
-        draw_text(screen, title_text, font, BLACK, SCREEN_WIDTH // 2 - font.size(title_text)[0] // 2, 80)
+        draw_text(screen, title_text, font, BLACK, SCREEN_WIDTH // 2 - font.size(title_text)[0] // 2, 40)
 
         # Instructions box
         instructions_text = [
@@ -32,7 +32,7 @@ class InstructionsState(State):
             ("Key Points:", "Think ahead and anticipate marker flips.\nDisrupt your opponent's potential rows.\nRing removal limits your future moves.\nIt is the third row that counts.")
         ]
 
-        y_offset = 150  # Start drawing the instructions below the title
+        y_offset = 100  # Start drawing the instructions below the title
 
         for topic, content in instructions_text:
             # Draw the topic in bold
@@ -46,4 +46,4 @@ class InstructionsState(State):
                 y_offset += small_font.get_height() + 10  # Add space between lines
 
         # Back button to return to the main menu (centered at the bottom)
-        self.back_button = draw_button(screen, "Go Back", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT - BUTTONS_HEIGHT - 60, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
+        self.back_button = draw_button(screen, "Go Back", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset , BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
