@@ -11,14 +11,20 @@ class GameState(State):
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
         self.valid_ring_moves = []
+        self.line5 = []
+        self.active_connect5 = False
+        self.valid_connect5 = []
+        self.selected_sequence = None
+        self.possible_sequences = []
 
     def handle_events(self, event):
         self.valid_ring_moves = []
+        # check 5 linha meu
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             for (valid_x,valid_y) in self.valid_moves:
                 if self.is_within_hitbox(x, y, valid_x, valid_y):
-                    print(valid_x,valid_y)
+                    #print(valid_x,valid_y)
                     if self.board.phase == BoardPhase.PREP:
                         self.board.perform_move((valid_x,valid_y), (0,0), self.player)
                         self.change_player()
@@ -28,19 +34,71 @@ class GameState(State):
                             self.board.marker_placed = True
                             self.board.num_markers -= 1
                             self.board.ring_pos = (valid_x,valid_y)
-                        else:
+                        elif not self.active_connect5:
                             self.board.perform_move(self.board.ring_pos, (valid_x,valid_y), self.player)
-                            self.board.marker_placed = False
-                            self.board.ring_pos = None
-                            self.change_player()
+                            self.line5 = self.board.check_5_line(self.player)
+                            self.active_connect5 = len(self.line5) > 0
+
+                            if not self.active_connect5:
+                                self.board.marker_placed = False
+                                self.board.ring_pos = None
+                                self.change_player()
+
+                        else:
+                            pass
+                        # select a ring to remove 
+                        # change player , false connect5 markerplaced rinpos
+
                     break
-            self.valid_moves = self.board.valid_moves(self.player)
-        if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME and not self.board.marker_placed:
+            if self.active_connect5:
+                self.valid_moves = []
+            else:
+                self.valid_moves = self.board.valid_moves(self.player)
+
+        if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            for (valid_x,valid_y) in self.valid_moves:
-                if self.is_within_hitbox(mouse_x, mouse_y, valid_x, valid_y):
-                    self.board.ring_pos = (valid_x,valid_y)
-                    self.valid_ring_moves = self.board.get_ring_moves()
+            if not self.board.marker_placed:
+                for (valid_x,valid_y) in self.valid_moves:
+                    if self.is_within_hitbox(mouse_x, mouse_y, valid_x, valid_y):
+                        self.board.ring_pos = (valid_x,valid_y)
+                        self.valid_ring_moves = self.board.get_ring_moves()
+            
+            if self.active_connect5:
+                hovered_point = None
+                self.selected_sequence = None
+                self.possible_sequences = []
+                for sequences in self.line5.values():
+                    print(f"SEQ1: {sequences} || MOUSE: {mouse_x,mouse_y}")
+                    for sequence in sequences:
+                        print(f"SEQ2: {sequence}")
+                        for (x,y) in sequence:
+                            if self.is_within_hitbox(mouse_x, mouse_y, x, y):
+                                hovered_point = (x,y)
+                                self.possible_sequences.append(sequence)
+                                if self.selected_sequence == None:
+                                    self.selected_sequence = sequence
+                                print(f"SEQUECEN : {sequence}")
+                                break  # Found it, stop searching
+                        if hovered_point:
+                            break
+                        #if hovered_point: -- para conseguir buscar com o ponto em varias direcoes
+                           # break
+                print(self.selected_sequence)
+                if self.selected_sequence != None:
+                    index = self.selected_sequence.index(hovered_point)
+    
+                    # Select 4 consecutive points
+                    if len(self.selected_sequence) <= 2:
+                        self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
+                    else:
+
+                    # Try to center around hovered point
+                        start_index = max(0, min(index - 1, len(self.selected_sequence) - 2))
+                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2]
+
+                        
+
+                
 
     def draw(self):
         self.board.draw(self.game.screen)
@@ -48,6 +106,8 @@ class GameState(State):
             pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,4)
         for x, y in self.valid_ring_moves:
             pygame.draw.circle(self.game.screen, (0, 255, 255), (x, y), 12 ,4)
+        for x, y in self.valid_connect5:
+            pygame.draw.circle(self.game.screen, (255, 255, 0), (x, y), 12 ,4)
 
     def is_within_hitbox(self, mouse_x, mouse_y, piece_x, piece_y):
         """
