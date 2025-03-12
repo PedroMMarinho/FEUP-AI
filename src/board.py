@@ -28,6 +28,7 @@ class Board:
         self.num_markers = 51
         self.marker_placed = False
         self.ring_pos = None
+        self.remove_ring_phase = False
 
     def createBoard(self):
          
@@ -112,16 +113,16 @@ class Board:
         if (self.phase == BoardPhase.PREP and self.num_rings1 == 5 and self.num_rings2 == 5):
             self.phase = BoardPhase.GAME
 
-        if self.phase == BoardPhase.GAME and self.marker_placed:
+        if self.phase == BoardPhase.GAME and self.marker_placed and not self.remove_ring_phase:
             moves = self.get_ring_moves()
         else:
             for (x,y), (col, row) in self.vertices.items():
                 if self.phase == BoardPhase.PREP and self.matrix[row][col] == BoardSpaceType.EMPTY.value:
                     moves.append((x,y))
-                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value and player == 1 and not self.marker_placed:
+                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value and player == 1 and (not self.marker_placed or self.remove_ring_phase):
                     moves.append((x,y))
-                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value and player == 2 and not self.marker_placed:
-                    moves.append((x,y))
+                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value and player == 2 and (not self.marker_placed or self.remove_ring_phase):
+                    moves.append((x,y))                        
         return moves
 
     def get_ring_moves(self):
@@ -203,9 +204,16 @@ class Board:
         return lines5
 
 
+    def remove_markers(self,sequence):
+        for (x,y) in sequence:
+            (col, row) = self.vertices[(x,y)]
+            self.matrix[row][col] = BoardSpaceType.EMPTY.value
+            self.num_markers += 1
 
-
-                        
+    def remove_ring(self, pos):
+        (x, y) = pos
+        (col, row) = self.vertices[(x,y)]
+        self.matrix[row][col] = BoardSpaceType.EMPTY.value
 
 
     def draw(self, screen):
