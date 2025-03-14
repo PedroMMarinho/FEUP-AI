@@ -23,6 +23,11 @@ class Board:
         self.sizeY = 19
         self.radius = radius if radius is not None else 29
         self.calculate_offsets()
+        if x_offset is not None:
+            self.x_offset = x_offset
+        if y_offset is not None:
+            self.y_offset = y_offset
+
         self.matrix = self.createBoard() 
         self.vertices = self.createBoardVertices()
         self.phase = BoardPhase.PREP
