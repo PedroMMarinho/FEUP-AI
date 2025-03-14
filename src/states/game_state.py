@@ -16,7 +16,7 @@ class GameState(State):
         self.valid_connect5 = []
         self.selected_sequence = None
         self.possible_sequences = []  
-        #self.last_hovered_point = (-1,-1)
+        self.last_hovered_point = (-1,-1)
 
     def handle_events(self, event):
         self.valid_ring_moves = []
@@ -95,42 +95,48 @@ class GameState(State):
                         self.valid_ring_moves = self.board.get_ring_moves()
             
             if self.active_connect5:
-                #(x,y) = self.last_hovered_point
-                #if self.last_hovered_point == (-1,-1) or not self.is_within_hitbox(mouse_x, mouse_y, x, y): FIX MOVIMENTO ???
-                hovered_point = None
-                self.selected_sequence = None
-                self.possible_sequences = []
-                for sequences in self.line5.values():
-                    print(f"SEQ1: {sequences} || MOUSE: {mouse_x,mouse_y}")
-                    for sequence in sequences:
-                        print(f"SEQ2: {sequence}")
-                        for (x,y) in sequence:
-                            if self.is_within_hitbox(mouse_x, mouse_y, x, y):
-                                hovered_point = (x,y)
-                                #self.last_hovered_point = hovered_point
-                                self.possible_sequences.append(sequence)
-                                if self.selected_sequence == None:
-                                    self.selected_sequence = sequence
-                                print(f"SEQUECEN : {sequence}")
-                                break  
-                        if hovered_point:
-                            break
-                print(self.selected_sequence)
-                if self.selected_sequence != None:
-                    index = self.selected_sequence.index(hovered_point)
-    
-                    # Select 5 consecutive points
-                    if len(self.selected_sequence) <= 2: # TODO: Change to 5
-                        self.valid_connect5 = self.selected_sequence 
-                    else:
-                        # Try to center around hovered point
-                        start_index = max(0, min(index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
-                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
+                (x,y) = self.last_hovered_point
+                if self.last_hovered_point == (-1,-1) or not self.is_within_hitbox(mouse_x, mouse_y, x, y):
+                    hovered_point = None
+                    selected_sequence = None
+                    possible_sequences = []
+                    enter = False
+                    for sequences in self.line5.values():
+                        print(f"SEQ1: {sequences} || MOUSE: {mouse_x,mouse_y}")
+                        for sequence in sequences:
+                            print(f"SEQ2: {sequence}")
+                            for (x,y) in sequence:
+                                if self.is_within_hitbox(mouse_x, mouse_y, x, y):
+                                    hovered_point = (x,y)
+                                    possible_sequences.append(sequence)
+                                    if self.selected_sequence == None or hovered_point != self.last_hovered_point:
+                                        selected_sequence = sequence
+                                    self.last_hovered_point = hovered_point
 
-                        if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
-                            self.possible_sequences.append(self.selected_sequence[index:])
+                                    print(f"SEQUECEN : {sequence}")
+                                    break  
+                            if hovered_point:
+                                break
+                    if len(possible_sequences) != 0:
+                        self.possible_sequences = possible_sequences
+                        self.selected_sequence = selected_sequence
+                        enter = True
+                    print(self.selected_sequence)
+                    if self.selected_sequence != None and enter:
+                        index = self.selected_sequence.index(hovered_point)
+        
+                        # Select 5 consecutive points
+                        if len(self.selected_sequence) <= 2: # TODO: Change to 5
+                            self.valid_connect5 = self.selected_sequence 
+                        else:
+                            # Try to center around hovered point
+                            start_index = max(0, min(index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
+                            self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
 
-                        
+                            if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
+                                self.possible_sequences.append(self.selected_sequence[index:])
+
+                            
 
                 
 
