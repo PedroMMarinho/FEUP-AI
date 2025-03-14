@@ -27,7 +27,7 @@ class GameCustomizationMenu(State):
         ]
         self.bot_difficulty = None
         self.bot_difficulty_2 = None
-        self.piece_button = PieceButton(self.game.screen, BUTTONS_WIDTH, BUTTONS_HEIGHT, pygame.font.SysFont(None, BUTTON_FONT_SIZE), BLACK, WHITE)
+        self.piece_button = PieceButton(self.game.screen, BUTTONS_WIDTH, BUTTONS_HEIGHT, pygame.font.SysFont(None, BUTTON_FONT_SIZE), WHITE, BLACK)
         self.customize_initial_board_button = None
         self.difficulty_button_2 = None  # For AI vs AI mode
 
