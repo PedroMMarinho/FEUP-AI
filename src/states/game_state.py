@@ -15,7 +15,8 @@ class GameState(State):
         self.active_connect5 = False
         self.valid_connect5 = []
         self.selected_sequence = None
-        self.possible_sequences = []
+        self.possible_sequences = []  
+        #self.last_hovered_point = (-1,-1)
 
     def handle_events(self, event):
         self.valid_ring_moves = []
@@ -51,9 +52,6 @@ class GameState(State):
                                         self.board.ring_pos = None
                                         self.change_player()
 
-                                    # valid moves vazio meter fora
-                                # select a ring to remove 
-                                # change player , false connect5 markerplaced rinpos
                                 elif self.board.remove_ring_phase:
                                     print("REMOVE RING STATE")
                                     self.board.remove_ring((valid_x,valid_y))
@@ -74,17 +72,17 @@ class GameState(State):
             if event.button == 3 and self.active_connect5:
                 print("RIGHT CLICK")
                 print(f"SELCT SEQ: {self.selected_sequence}")
-                if self.selected_sequence != None:
+                if self.selected_sequence != None and len(self.possible_sequences) > 1:
                     sequence_index = self.possible_sequences.index(self.selected_sequence)
                     next_index = (sequence_index + 1) % len(self.possible_sequences)
                     self.selected_sequence = self.possible_sequences[next_index]
 
-                    if len(self.selected_sequence) <= 2:
+                    if len(self.selected_sequence) <= 2: # TODO: Change to 5
                         self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
                     else:
                         # Try to center around hovered point
-                        start_index = max(0, min(next_index - 1, len(self.selected_sequence) - 2))
-                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2]
+                        start_index = max(0, min(next_index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
+                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
 
                     
 
@@ -97,6 +95,8 @@ class GameState(State):
                         self.valid_ring_moves = self.board.get_ring_moves()
             
             if self.active_connect5:
+                #(x,y) = self.last_hovered_point
+                #if self.last_hovered_point == (-1,-1) or not self.is_within_hitbox(mouse_x, mouse_y, x, y): FIX MOVIMENTO ???
                 hovered_point = None
                 self.selected_sequence = None
                 self.possible_sequences = []
@@ -107,27 +107,28 @@ class GameState(State):
                         for (x,y) in sequence:
                             if self.is_within_hitbox(mouse_x, mouse_y, x, y):
                                 hovered_point = (x,y)
+                                #self.last_hovered_point = hovered_point
                                 self.possible_sequences.append(sequence)
                                 if self.selected_sequence == None:
                                     self.selected_sequence = sequence
                                 print(f"SEQUECEN : {sequence}")
-                                break  # Found it, stop searching
+                                break  
                         if hovered_point:
                             break
-                        #if hovered_point: -- para conseguir buscar com o ponto em varias direcoes
-                           # break
                 print(self.selected_sequence)
                 if self.selected_sequence != None:
                     index = self.selected_sequence.index(hovered_point)
     
-                    # Select 4 consecutive points
-                    if len(self.selected_sequence) <= 2:
-                        self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
+                    # Select 5 consecutive points
+                    if len(self.selected_sequence) <= 2: # TODO: Change to 5
+                        self.valid_connect5 = self.selected_sequence 
                     else:
+                        # Try to center around hovered point
+                        start_index = max(0, min(index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
+                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
 
-                    # Try to center around hovered point
-                        start_index = max(0, min(index - 1, len(self.selected_sequence) - 2))
-                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 2]
+                        if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
+                            self.possible_sequences.append(self.selected_sequence[index:])
 
                         
 

@@ -119,11 +119,19 @@ class Board:
             for (x,y), (col, row) in self.vertices.items():
                 if self.phase == BoardPhase.PREP and self.matrix[row][col] == BoardSpaceType.EMPTY.value:
                     moves.append((x,y))
-                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value and player == 1 and (not self.marker_placed or self.remove_ring_phase):
+                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value and player == 1 and (not self.marker_placed or self.remove_ring_phase) and not self.ring_blocked(x,y):
                     moves.append((x,y))
-                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value and player == 2 and (not self.marker_placed or self.remove_ring_phase):
+                elif self.phase == BoardPhase.GAME and self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value and player == 2 and (not self.marker_placed or self.remove_ring_phase) and not self.ring_blocked(x,y):
                     moves.append((x,y))                        
         return moves
+    
+    def ring_blocked(self,x,y):
+        self.ring_pos = (x,y)
+        moves = self.get_ring_moves()
+        self.ring_pos = None
+        if len(moves) != 0: 
+            return False
+        return True
 
     def get_ring_moves(self):
         moves = []
@@ -195,7 +203,7 @@ class Board:
 
                                 c += vectorX
                                 r += vectorY
-                        if len(line) >= 2:
+                        if len(line) >= 2: # TODO: Change to 5
                             lines5.setdefault(direction, []).append(line)
 
         print(f"LINE5: {lines5}")
