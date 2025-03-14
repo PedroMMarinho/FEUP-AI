@@ -7,6 +7,7 @@ class GameState(State):
 
     def __init__(self, game):
         super().__init__(game)
+        self.game_type = "Normal"
         self.board = Board() 
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
@@ -17,6 +18,7 @@ class GameState(State):
         self.selected_sequence = None
         self.possible_sequences = []  
         self.last_hovered_point = (-1,-1)
+        self.line5_end_turn = False
 
     def handle_events(self, event):
         self.valid_ring_moves = []
@@ -37,15 +39,15 @@ class GameState(State):
                                 self.board.perform_move((valid_x,valid_y), (0,0), self.player)
                                 self.change_player()
                             elif self.board.phase == BoardPhase.GAME:
-                                if not self.board.marker_placed:
+                                if not self.board.marker_placed and not self.board.remove_ring_phase:
                                     self.board.perform_move((valid_x,valid_y), (0,0), self.player)
                                     self.board.marker_placed = True
                                     self.board.num_markers -= 1
                                     self.board.ring_pos = (valid_x,valid_y)
                                 elif not self.active_connect5 and not self.board.remove_ring_phase:
                                     self.board.perform_move(self.board.ring_pos, (valid_x,valid_y), self.player)
-                                    self.line5 = self.board.check_5_line(self.player)
-                                    self.active_connect5 = len(self.line5) > 0
+                                    self.line5_end_turn = True
+                                    self.verify_5line()
 
                                     if not self.active_connect5:
                                         self.board.marker_placed = False
@@ -60,9 +62,14 @@ class GameState(State):
                                     self.board.ring_pos = None
                                     if self.player == 1:
                                         self.board.num_rings1 -= 1
+                                        if self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2 :
+                                            print("GAME OVER 1 WIN") # TODO: Handle finish game
                                     else: 
                                         self.board.num_rings2 -= 1
-                                    self.change_player()
+                                        if self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 :
+                                            print("GAME OVER 2 WIN") # TODO: Handle finish game
+                                    if self.line5_end_turn:
+                                        self.change_player()
 
                             break
                 if self.active_connect5:
@@ -73,22 +80,29 @@ class GameState(State):
                 print("RIGHT CLICK")
                 print(f"SELCT SEQ: {self.selected_sequence}")
                 if self.selected_sequence != None and len(self.possible_sequences) > 1:
+                    print(f"POSSIBLE SQ {self.possible_sequences}")
                     sequence_index = self.possible_sequences.index(self.selected_sequence)
                     next_index = (sequence_index + 1) % len(self.possible_sequences)
                     self.selected_sequence = self.possible_sequences[next_index]
+                    point_index = self.selected_sequence.index(self.last_hovered_point)
+
 
                     if len(self.selected_sequence) <= 2: # TODO: Change to 5
                         self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
                     else:
                         # Try to center around hovered point
-                        start_index = max(0, min(next_index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
+                        start_index = max(0, min(point_index - 1, len(self.selected_sequence) - 2)) # TODO: Change to 5
                         self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
+
+                        if len(self.selected_sequence) % 2 == 1 and sequence_index == len(self.selected_sequence) // 2:
+                            print(f"Appending case impar -- Idx {sequence_index} | Seq {self.selected_sequence}")
+                            self.possible_sequences.append(self.selected_sequence[sequence_index:])
 
                     
 
         if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            if not self.board.marker_placed:
+            if not self.board.marker_placed and not self.board.remove_ring_phase:
                 for (valid_x,valid_y) in self.valid_moves:
                     if self.is_within_hitbox(mouse_x, mouse_y, valid_x, valid_y):
                         self.board.ring_pos = (valid_x,valid_y)
@@ -134,10 +148,13 @@ class GameState(State):
                             self.valid_connect5 = self.selected_sequence[start_index:start_index + 2] # TODO: Change to 5
 
                             if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
+                                print(f"Appending case impar -- Idx {index} | Seq {self.selected_sequence}")
                                 self.possible_sequences.append(self.selected_sequence[index:])
 
                             
-
+    def verify_5line(self):
+        self.line5 = self.board.check_5_line(self.player)
+        self.active_connect5 = len(self.line5) > 0
                 
 
     def draw(self):
@@ -161,4 +178,8 @@ class GameState(State):
             self.player = 2
         else:
             self.player = 1
+
+        self.line5_end_turn = False
+        self.verify_5line()
+
             
