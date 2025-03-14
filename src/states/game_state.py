@@ -1,4 +1,5 @@
 import pygame
+import pygame.gfxdraw 
 import math
 from states.state import State
 from board import Board, BoardPhase
@@ -163,11 +164,15 @@ class GameState(State):
     def draw(self):
         self.board.draw(self.game.screen)
         for x, y in self.valid_moves:
-            pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,4)
+            pygame.gfxdraw.aacircle(self.game.screen, x, y, 14, (0, 255, 0))  # Green outline
+            pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,5)
         for x, y in self.valid_ring_moves:
-            pygame.draw.circle(self.game.screen, (0, 255, 255), (x, y), 12 ,4)
+            pygame.gfxdraw.aacircle(self.game.screen, x, y, 14, (0, 255, 0))  # Green outline
+            pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,5)
         for x, y in self.valid_connect5:
-            pygame.draw.circle(self.game.screen, (255, 255, 0), (x, y), 12 ,4)
+            pygame.gfxdraw.aacircle(self.game.screen, x, y, 16, (255, 255, 0))  # Yellow outline
+            pygame.draw.circle(self.game.screen, (255, 255, 0), (x, y), 14 ,5)
+
 
     def is_within_hitbox(self, mouse_x, mouse_y, piece_x, piece_y):
         """

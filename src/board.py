@@ -1,7 +1,8 @@
 import pygame
+import pygame.gfxdraw 
 import math
 from enum import Enum
-from config import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK
+from config import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER1_COLOR, PLAYER2_COLOR
 # Board class - MatrixSize = 11x19
 
 class BoardSpaceType(Enum): 
@@ -20,9 +21,8 @@ class Board:
     def __init__(self, x_offset=None, y_offset=None, radius=None):
         self.sizeX = 11
         self.sizeY = 19
-        self.x_offset = x_offset if x_offset is not None else SCREEN_WIDTH // 2 - 220 
-        self.y_offset = y_offset if y_offset is not None else SCREEN_HEIGHT // 2 - 300 
-        self.radius = radius if radius is not None else 30
+        self.radius = radius if radius is not None else 29
+        self.calculate_offsets()
         self.matrix = self.createBoard() 
         self.vertices = self.createBoardVertices()
         self.phase = BoardPhase.PREP
@@ -32,6 +32,15 @@ class Board:
         self.marker_placed = False
         self.ring_pos = None
         self.remove_ring_phase = False
+
+
+    def calculate_offsets(self):
+        board_width = (self.sizeX-1) * 2 * self.radius  # Width based on hex spacing
+        board_height = (self.sizeY-1) * math.sqrt(3) * self.radius * 0.7 # Height based on row spacing
+
+        # Center the board
+        self.x_offset = (SCREEN_WIDTH - board_width) // 2
+        self.y_offset = (SCREEN_HEIGHT - board_height) // 2
 
 
     def update_matrix(self, matrix):
@@ -233,39 +242,39 @@ class Board:
 
 
     def draw(self, screen):
+        white_markers = []
+        white_rings = []
+        black_markers = []
+        black_rings = []
+        pygame.draw.line(screen,BLACK,(SCREEN_WIDTH//2,0), (SCREEN_WIDTH//2,SCREEN_HEIGHT))
         for (x,y), (col, row) in self.vertices.items():
             for (dx, dy) in [(-1, 1), (0,-2),(0,2), (1,-1), (-1,-1), (1,1) ]:
                         x2, y2 = self.matrix_position_to_pixel(row+dy,col+dx)
                         if (x2,y2) in self.vertices:
-                            pygame.draw.line(screen, BLACK, (x, y), (x2, y2), 2)
-
+                            pygame.draw.aaline(screen, BLACK, (x, y), (x2, y2))
             if self.matrix[row][col] == BoardSpaceType.PLAYER1_RING.value:
-                pygame.draw.circle(screen, (0, 0, 255), (x, y), 12, 4)
+                white_rings.append((x,y))
 
             elif self.matrix[row][col] == BoardSpaceType.PLAYER1_MARKER.value:
-                pygame.draw.circle(screen, (0, 0, 255), (x, y), 12)
+                white_markers.append((x,y))
 
             elif self.matrix[row][col] == BoardSpaceType.PLAYER2_RING.value:
-                pygame.draw.circle(screen, (255, 0, 0), (x, y), 12, 4)
+                black_rings.append((x,y))
 
             elif self.matrix[row][col] == BoardSpaceType.PLAYER2_MARKER.value:
-                pygame.draw.circle(screen, (255, 0, 0), (x, y), 12)
+                black_markers.append((x,y))
+                
+        for (x,y) in white_rings:
+            pygame.draw.circle(screen, PLAYER1_COLOR, (x, y), 12, 5)
 
-        '''
-        # Second pass: Draw all edges
-        for row in range(self.sizeY):
-            for col in range(self.sizeX):
-                if self.matrix[row][col] != -1:
-                    x, y = self.matrix_position_to_pixel(row, col)
-                    # Draw neighbor edges
-                    for (dx, dy) in [(-1, 1), (0,-2),(0,2), (1,-1), (-1,-1), (1,1) ]:
-                        if (row + dy, col + dx) in self.vertices:
-                            x2, y2 = self.vertices[(row + dy, col + dx)]
-                            pygame.draw.line(screen, BLACK, (x, y), (x2, y2), 2)
-        '''
+        for (x,y) in white_markers:
+            pygame.draw.circle(screen, PLAYER1_COLOR, (x, y), 12)
 
+        for (x,y) in black_rings:
+            pygame.draw.circle(screen, PLAYER2_COLOR, (x, y), 12, 5)
 
-            
+        for (x,y) in black_markers:
+            pygame.draw.circle(screen, PLAYER2_COLOR, (x, y), 12)
 
         
 
