@@ -2,11 +2,13 @@ import pygame
 import math
 from states.state import State
 from board import Board, BoardPhase
+from mode import GameMode
 
 class GameState(State):
 
-    def __init__(self, game):
+    def __init__(self, game , mode ,board, player=1,bot1_difficulty=None, bot2_difficulty=None):
         super().__init__(game)
+        self.game_mode = mode
         self.game_type = "Normal"
         self.board = Board() 
         self.player = 1
@@ -19,6 +21,7 @@ class GameState(State):
         self.possible_sequences = []  
         self.last_hovered_point = (-1,-1)
         self.line5_end_turn = False
+
 
     def handle_events(self, event):
         self.valid_ring_moves = []

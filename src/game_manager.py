@@ -2,8 +2,10 @@ import pygame
 import config
 from states.main_menu_state import MainMenuState
 from states.game_state import GameState
-# from states.instructions_state import InstructionsState
-
+from states.instructions_state import InstructionsState
+from states.option_menu_state import OptionMenuState
+from states.game_customization_menu_state import GameCustomizationMenu
+from states.board_customization_menu_state import BoardCustomizationMenu
 
 
 class GameManager:
@@ -12,16 +14,34 @@ class GameManager:
         self.screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         pygame.display.set_caption("Yinsh")
         self.running = True
+        self.state_stack = []  # Stack to track state history
         self.states = {
             "menu": MainMenuState(self),
-            "game": GameState(self),
-           #"instructions": InstructionsState(self)
+            "instructions": InstructionsState(self),
+            "options" : OptionMenuState(self),
+            "initial_board_customization": BoardCustomizationMenu(self),
         }
         self.current_state = self.states["menu"]
 
-    def change_state(self, new_state):
-        self.current_state = self.states[new_state]
+    def change_state(self, new_state, *args):
 
+        if self.current_state:
+            self.state_stack.append(self.current_state)  # Save the current state
+
+        if new_state == "customization":
+            self.current_state = GameCustomizationMenu(self,*args)
+        elif new_state == "game":
+            for i in args:
+                print (i)
+            self.current_state = GameState(self,*args)
+        else:
+            self.current_state = self.states[new_state]
+
+    def go_back(self):
+        """Return to the previous state if available."""
+        if self.state_stack:
+            self.current_state = self.state_stack.pop()
+    
     def run(self):
         while self.running:
             self.screen.fill((255,255,255))

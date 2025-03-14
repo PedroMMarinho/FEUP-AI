@@ -17,10 +17,13 @@ class BoardPhase(Enum):
     GAME = 1
 
 class Board:
-    def __init__(self):
+    def __init__(self, x_offset=None, y_offset=None, radius=None):
         self.sizeX = 11
         self.sizeY = 19
-        self.matrix = self.createBoard()
+        self.x_offset = x_offset if x_offset is not None else SCREEN_WIDTH // 2 - 220 
+        self.y_offset = y_offset if y_offset is not None else SCREEN_HEIGHT // 2 - 300 
+        self.radius = radius if radius is not None else 30
+        self.matrix = self.createBoard() 
         self.vertices = self.createBoardVertices()
         self.phase = BoardPhase.PREP
         self.num_rings1 = 0
@@ -29,6 +32,11 @@ class Board:
         self.marker_placed = False
         self.ring_pos = None
         self.remove_ring_phase = False
+
+
+    def update_matrix(self, matrix):
+        self.matrix = matrix
+        self.vertices = self.createBoardVertices()
 
     def createBoard(self):
          
@@ -63,10 +71,10 @@ class Board:
         return vertices
 
     
-    def matrix_position_to_pixel(self, row, col, radius=30):
+    def matrix_position_to_pixel(self, row, col):
         """Convert hex grid coordinates to pixel positions (center points)."""
-        x = col * 2 * radius + SCREEN_WIDTH // 2 - 220 
-        y = (row + 1) * math.sqrt(3) * radius * 0.7 + SCREEN_HEIGHT // 2 - 300 
+        x = col * 2 * self.radius + self.x_offset
+        y = (row + 1) * math.sqrt(3) * self.radius * 0.7 + self.y_offset
         return int(x), int(y)    
 
 
