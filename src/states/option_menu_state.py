@@ -17,13 +17,13 @@ class OptionMenuState(State):
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             if self.player_vs_player_button.collidepoint(x, y):
-                self.game.change_state("customization", GameMode.PLAYER_VS_PLAYER)  # TODO: Customize for player vs player
+                self.game.change_state("customization", GameMode.PLAYER_VS_PLAYER)  
             elif self.player_vs_ai_button.collidepoint(x, y):
-                self.game.change_state("customization", GameMode.PLAYER_VS_AI)  # TODO: Customize for player vs AI
+                self.game.change_state("customization", GameMode.PLAYER_VS_AI)  
             elif self.ai_vs_ai_button.collidepoint(x, y):
-                self.game.change_state("customization", GameMode.AI_VS_AI)  # TODO: Customize for AI vs AI
+                self.game.change_state("customization", GameMode.AI_VS_AI)  
             elif self.back_button.collidepoint(x, y):
-                self.game.change_state("menu")  # Return to the main menu
+                self.game.go_back()
 
     def draw(self):
         screen = self.game.screen

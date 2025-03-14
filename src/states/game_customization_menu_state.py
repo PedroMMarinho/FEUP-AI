@@ -37,7 +37,7 @@ class GameCustomizationMenu(State):
             if self.start_game.collidepoint(x, y) and self.gameMode == GameMode.PLAYER_VS_PLAYER:
                 self.game.change_state("game", self.gameMode, self.board)
             elif self.back_button.collidepoint(x, y):
-                self.game.change_state("options")
+                self.game.go_back()
             elif self.customize_initial_board_button.collidepoint(x, y):
                 self.game.change_state("initial_board_customization") # TODO
             elif self.start_game.collidepoint(x,y) and self.gameMode == GameMode.PLAYER_VS_AI and self.bot_difficulty is not None:
@@ -136,4 +136,4 @@ class GameCustomizationMenu(State):
                 self.customize_initial_board_button = draw_button(screen, "Customize Initial Board", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset, BUTTONS_WIDTH, BUTTONS_HEIGHT, small_font, BLACK, WHITE)
                 y_offset += 100
 
-                self.back_button = draw_button(screen, "Go Back", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
+                self.back_button = draw_button(screen, "Back", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)

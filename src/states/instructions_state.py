@@ -13,7 +13,7 @@ class InstructionsState(State):
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
             if self.back_button.collidepoint(x, y):
-                self.game.change_state("menu")  # Change state to main menu
+                self.game.go_back()  # Change state to main menu
 
     def draw(self):
         screen = self.game.screen
