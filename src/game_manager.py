@@ -41,9 +41,11 @@ class GameManager:
         """Return to the previous state if available."""
         if self.state_stack:
             self.current_state = self.state_stack.pop()
+    
+    def exit_game(self):
+        self.running = False
 
     def draw_gradient_background(self, color_top, color_bottom):
-        """Draws a vertical gradient background from color_top (top) to color_bottom (bottom)."""
         for y in range(config.SCREEN_HEIGHT):
             color = (
                 color_top[0] + (color_bottom[0] - color_top[0]) * y // config.SCREEN_HEIGHT,
@@ -55,13 +57,12 @@ class GameManager:
         
     def run(self):
         while self.running:
-            self.screen.fill((255,255,255))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                 self.current_state.handle_events(event)
             
-            self.draw_gradient_background((153, 204, 255), (199, 224, 255))  # Light gray to dark gray
+            self.draw_gradient_background((222, 247, 247), (240, 247, 255))
             self.current_state.draw()
             pygame.display.flip()
 

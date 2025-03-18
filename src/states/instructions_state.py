@@ -1,19 +1,19 @@
 import pygame
-from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, BLACK, WHITE
+from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, BLACK, WHITE, FONT
 from states.state import State
 from ui import draw_button, draw_text
+from button import ClickButton
 
 class InstructionsState(State):
 
     def __init__(self, game):
         super().__init__(game)
-        self.back_button = None
+        self.buttons = []
 
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = event.pos
-            if self.back_button.collidepoint(x, y):
-                self.game.go_back()  # Change state to main menu
+            for button in self.buttons:
+                button.click(event) 
 
     def draw(self):
         screen = self.game.screen
@@ -46,4 +46,13 @@ class InstructionsState(State):
                 y_offset += small_font.get_height() + 10  # Add space between lines
 
         # Back button to return to the main menu (centered at the bottom)
-        self.back_button = draw_button(screen, "Go Back", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset , BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
+        self.buttons.append(  
+                      ClickButton("Back", 
+                        SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, y_offset,
+                        BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                        FONT,
+                        action=lambda: self.game.go_back())
+                    )
+
+        for button in self.buttons:
+            button.draw(screen)

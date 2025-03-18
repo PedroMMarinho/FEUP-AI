@@ -1,7 +1,8 @@
 import pygame
-from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, BLACK, WHITE
+from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT
 from states.state import State
-from ui import draw_button, draw_text
+from ui import draw_text
+from button import ClickButton
 
 
 class MainMenuState(State):
@@ -11,47 +12,33 @@ class MainMenuState(State):
         self.play_button = None
         self.instructions_button = None
         self.exit_button = None
-
+        self.buttons = [
+            ClickButton("Play", 
+                SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - BUTTONS_HEIGHT - 10,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                action=lambda: self.game.change_state("options")),
+            ClickButton("Instructions", 
+                SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 + 25,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                action=lambda: self.game.change_state("instructions")),
+            ClickButton("Exit", 
+                SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 + BUTTONS_HEIGHT + 60,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                action=lambda: self.game.exit_game())
+        ]
+        
     def handle_events(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = event.pos
-            if self.play_button.collidepoint(x, y):
-                self.game.change_state("options")  
-            elif self.instructions_button.collidepoint(x, y):
-                self.game.change_state("instructions")
-            elif self.exit_button.collidepoint(x, y):
-                self.game.running = False
+            for button in self.buttons:
+                button.click(event)
 
     def draw(self):
         screen = self.game.screen
-        font = pygame.font.SysFont(None, 50)
-        draw_text(screen,"Yinsh",font,BLACK, SCREEN_WIDTH // 2 - font.size("Yinsh")[0] // 2, 150)
-        self.play_button = draw_button(screen, "Play", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - BUTTONS_HEIGHT - 30, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
-        self.instructions_button = draw_button(screen, "Instructions", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
-        self.exit_button = draw_button(screen, "Exit", SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 + BUTTONS_HEIGHT + 30, BUTTONS_WIDTH, BUTTONS_HEIGHT, font, BLACK, WHITE)
+        font = pygame.font.Font(None, 60)
+        draw_text(screen,"Yinsh",font,(60, 100, 140), SCREEN_WIDTH // 2 - font.size("Yinsh")[0] // 2, 160)
+        for button in self.buttons:
+            button.draw(screen)
 
-
-
-'''
-
-    def __init__(self):
-        self.font = pygame.font.SysFont(None, 50)
-    
-    def handle_events(self, event):
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Transition to the game state (e.g., clicking 'Start')
-            game_state_manager.change_state(GameStatePlay())
-    
-    def draw(self):
-        screen.fill((0, 0, 0))
-        title_text = self.font.render("Yinsh Game", True, (255, 255, 255))
-        start_text = self.font.render("Start Game", True, (255, 255, 255))
-        screen.blit(title_text, (320, 100))
-        screen.blit(start_text, (320, 300))
-        pygame.display.flip()
-
-
-'''

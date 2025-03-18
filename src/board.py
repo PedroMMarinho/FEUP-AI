@@ -1,5 +1,4 @@
 import pygame
-import pygame.gfxdraw 
 import math
 from enum import Enum
 from config import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER1_COLOR, PLAYER2_COLOR
@@ -17,6 +16,13 @@ class BoardPhase(Enum):
     PREP = 0
     GAME = 1
 
+class BoardAction(Enum):
+    PLACE_RING = "Place Ring"
+    PLACE_MARKER = "Place Marker"
+    MOVE_RING = "Move Ring"
+    REMOVE_5LINE = "Remove a 5 line group"
+    REMOVE_RING = "Remove Ring"
+
 class Board:
     def __init__(self, x_offset=None, y_offset=None, radius=None):
         self.sizeX = 11
@@ -26,6 +32,7 @@ class Board:
         self.matrix = self.createBoard() 
         self.vertices = self.createBoardVertices()
         self.phase = BoardPhase.PREP
+        self.next_action = BoardAction.PLACE_RING
         self.num_rings1 = 0
         self.num_rings2 = 0
         self.num_markers = 51
@@ -36,11 +43,11 @@ class Board:
 
     def calculate_offsets(self):
         board_width = (self.sizeX-1) * 2 * self.radius  # Width based on hex spacing
-        board_height = (self.sizeY-1) * math.sqrt(3) * self.radius * 0.7 # Height based on row spacing
+        board_height = (self.sizeY-1) * math.sqrt(3) * self.radius * 0.7# Height based on row spacing
 
         # Center the board
         self.x_offset = (SCREEN_WIDTH - board_width) // 2
-        self.y_offset = (SCREEN_HEIGHT - board_height) // 2
+        self.y_offset = (SCREEN_HEIGHT - (board_height + board_height/10)) // 2
 
 
     def update_matrix(self, matrix):
@@ -129,10 +136,16 @@ class Board:
         moves = []
         if (self.phase == BoardPhase.PREP and self.num_rings1 == 5 and self.num_rings2 == 5):
             self.phase = BoardPhase.GAME
+            self.next_action = BoardAction.PLACE_MARKER
 
         if self.phase == BoardPhase.GAME and self.marker_placed and not self.remove_ring_phase:
             moves = self.get_ring_moves()
+            self.next_action = BoardAction.MOVE_RING
         else:
+            if self.remove_ring_phase:
+                self.next_action = BoardAction.REMOVE_RING
+            elif self.phase == BoardPhase.GAME:
+                self.next_action = BoardAction.PLACE_MARKER
             for (x,y), (col, row) in self.vertices.items():
                 if self.phase == BoardPhase.PREP and self.matrix[row][col] == BoardSpaceType.EMPTY.value:
                     moves.append((x,y))
@@ -226,6 +239,8 @@ class Board:
         print(f"LINE5: {lines5}")
         print(f"VISITED: {visited}")
         print("-------------------------------")
+        if len(lines5) > 0:
+            self.next_action = BoardAction.REMOVE_5LINE
         return lines5
 
 
@@ -246,7 +261,7 @@ class Board:
         white_rings = []
         black_markers = []
         black_rings = []
-        pygame.draw.line(screen,BLACK,(SCREEN_WIDTH//2,0), (SCREEN_WIDTH//2,SCREEN_HEIGHT))
+
         for (x,y), (col, row) in self.vertices.items():
             for (dx, dy) in [(-1, 1), (0,-2),(0,2), (1,-1), (-1,-1), (1,1) ]:
                         x2, y2 = self.matrix_position_to_pixel(row+dy,col+dx)

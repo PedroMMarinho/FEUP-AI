@@ -1,4 +1,4 @@
-# config.py
+import pygame
 
 # Screen settings
 SCREEN_WIDTH = 1200
@@ -20,3 +20,8 @@ PLAYER2_COLOR = BLACK
 BUTTONS_WIDTH = 300
 BUTTONS_HEIGHT = 60
 BUTTON_FONT_SIZE = 50
+
+pygame.font.init()
+FONT = pygame.font.Font(None, 40)
+
+FONT2 = pygame.font.Font(None, 80)

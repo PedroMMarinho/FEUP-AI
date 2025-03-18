@@ -1,6 +1,7 @@
 import pygame
 import pygame.gfxdraw 
 import math
+from ui import draw_text
 from states.state import State
 from board import Board, BoardPhase
 from mode import GameMode
@@ -163,12 +164,22 @@ class GameState(State):
 
     def draw(self):
         self.board.draw(self.game.screen)
+        draw_text(self.game.screen, "Next Action",pygame.font.Font(None, 50),(0,0,0),900,30)
+        draw_text(self.game.screen, self.board.next_action.value,pygame.font.Font(None, 50),(0,0,0),900,100)
+
+        draw_text(self.game.screen, "Player Turn",pygame.font.Font(None, 50),(0,0,0),100,30)
+        if self.player == 1:
+            draw_text(self.game.screen, "White",pygame.font.Font(None, 50),(0,0,0),100,100)
+        else:
+            draw_text(self.game.screen, "Black",pygame.font.Font(None, 50),(0,0,0),100,100)
+
+
         for x, y in self.valid_moves:
             pygame.gfxdraw.aacircle(self.game.screen, x, y, 14, (0, 255, 0))  # Green outline
             pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,5)
         for x, y in self.valid_ring_moves:
-            pygame.gfxdraw.aacircle(self.game.screen, x, y, 14, (0, 255, 0))  # Green outline
-            pygame.draw.circle(self.game.screen, (0, 255, 0), (x, y), 12 ,5)
+            pygame.gfxdraw.aacircle(self.game.screen, x, y, 14, (255, 255, 0))  # Green outline
+            pygame.draw.circle(self.game.screen, (255, 255, 0), (x, y), 12 ,5)
         for x, y in self.valid_connect5:
             pygame.gfxdraw.aacircle(self.game.screen, x, y, 16, (255, 255, 0))  # Yellow outline
             pygame.draw.circle(self.game.screen, (255, 255, 0), (x, y), 14 ,5)

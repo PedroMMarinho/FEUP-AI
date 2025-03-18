@@ -1,6 +1,55 @@
 import pygame
 from ui import draw_text
 
+class ClickButton:
+    def __init__(self,text, x, y, height, width, font, action=None):
+        self.text = text
+        self.x = x
+        self.y = y
+        self.height = height
+        self.width = width
+        self.font = font
+        self.action = action
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        # Colors
+        self.color = (222, 247, 247)  
+        self.text_color = (60, 100, 140)
+        self.hover_color = (183, 225, 225)
+        self.hover_text_color = (255,255,255)
+        self.border_color = (141,182,200)
+        self.shadow_color = (141,182,200)
+
+    def draw(self, screen):
+        pos = pygame.mouse.get_pos()
+
+        # Check if mouse is hovering over the text
+        is_hovered = self.rect.collidepoint(pos)
+
+        button_color = self.hover_color if is_hovered else self.color
+
+        text_color = self.hover_text_color if is_hovered else self.text_color
+
+        # Shadow
+        shadow_offset = 4
+        pygame.draw.rect(screen, self.shadow_color, (self.x + shadow_offset, self.y + shadow_offset, self.width, self.height), border_radius=10)
+
+        # Border
+        pygame.draw.rect(screen, self.border_color, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), border_radius=12)
+
+        pygame.draw.rect(screen, button_color, self.rect, border_radius=10)
+
+        # Text Centered
+        text_x = self.x + (self.width - self.font.size(self.text)[0]) // 2
+        text_y = self.y + (self.height - self.font.get_height()) // 2
+
+        draw_text(screen, self.text, self.font, text_color, text_x, text_y)
+
+    def click(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos) and self.action:
+            self.action()
+
+
 class Button:
     def __init__(self, text, screen, width, height, font, color, text_color, isSelected=False):
         self.text = text
