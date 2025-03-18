@@ -39,7 +39,7 @@ class BoardCustomizationMenu(State):
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             x, y = event.pos
             if self.back_button.collidepoint(x, y):
-                self.game.change_state("menu")
+                self.game.go_back()
             elif self.visible_area.collidepoint(x, y):
                 for index, board in enumerate(self.boards):
                     button_rect = pygame.Rect(self.visible_area.x, self.visible_area.y + index * (self.board_button_spacing + self.board_button_height) - self.scroll_offset, self.board_button_width, self.board_button_height)

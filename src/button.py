@@ -95,7 +95,7 @@ class PieceButton:
 
     def draw(self, x, y):
         self.rect.topleft = (x, y)  # Update position
-        string = "Black" if self.state == 1 else "White"
+        string = "Black" if self.state == 2 else "White"
         pygame.draw.rect(self.screen, self.color, self.rect)
         draw_text(self.screen, string, self.font, self.text_color, 
                   x + self.width // 2 - self.font.size(string)[0] // 2, 
@@ -107,7 +107,7 @@ class PieceButton:
     def toggle(self):
         self.state = 1 if self.state == 2 else 2
 
-        if self.state == 1:
+        if self.state == 2:
             self.color = (0, 0, 0)
             self.text_color = (255, 255, 255)
         else:
