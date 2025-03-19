@@ -2,7 +2,7 @@ import pygame
 from ui import draw_text
 
 class ClickButton:
-    def __init__(self,text, x, y, height, width, font, action=None):
+    def __init__(self,text, x, y, height, width, font, button_color, text_color, hover_color, hover_text_color, border_color=None, shadow_color=None, action=None):
         self.text = text
         self.x = x
         self.y = y
@@ -11,19 +11,17 @@ class ClickButton:
         self.font = font
         self.action = action
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-
         # Colors
-        self.color = (222, 247, 247)  
-        self.text_color = (60, 100, 140)
-        self.hover_color = (183, 225, 225)
-        self.hover_text_color = (255,255,255)
-        self.border_color = (141,182,200)
-        self.shadow_color = (141,182,200)
+        self.color = button_color
+        self.text_color = text_color
+        self.hover_color = hover_color
+        self.hover_text_color = hover_text_color
+        self.border_color = border_color
+        self.shadow_color = shadow_color
 
     def draw(self, screen):
         pos = pygame.mouse.get_pos()
 
-        # Check if mouse is hovering over the text
         is_hovered = self.rect.collidepoint(pos)
 
         button_color = self.hover_color if is_hovered else self.color
@@ -31,15 +29,18 @@ class ClickButton:
         text_color = self.hover_text_color if is_hovered else self.text_color
 
         # Shadow
-        shadow_offset = 4
-        pygame.draw.rect(screen, self.shadow_color, (self.x + shadow_offset, self.y + shadow_offset, self.width, self.height), border_radius=10)
+        if self.shadow_color is not None:
+            shadow_offset = 4
+            pygame.draw.rect(screen, self.shadow_color, (self.x + shadow_offset, self.y + shadow_offset, self.width, self.height), border_radius=10)
 
         # Border
-        pygame.draw.rect(screen, self.border_color, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), border_radius=12)
+        if self.border_color is not None:
+            pygame.draw.rect(screen, self.border_color, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), border_radius=12)
 
+        # Button
         pygame.draw.rect(screen, button_color, self.rect, border_radius=10)
 
-        # Text Centered
+        # Text
         text_x = self.x + (self.width - self.font.size(self.text)[0]) // 2
         text_y = self.y + (self.height - self.font.get_height()) // 2
 
