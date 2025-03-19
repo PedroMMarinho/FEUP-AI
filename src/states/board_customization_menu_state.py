@@ -61,7 +61,7 @@ class BoardCustomizationMenu(State):
             del self.board_slider.boards[self.board_slider.selected_board]
 
             # Save updated list to JSON
-            save_boards(self.board_slider.json_file,self.board_slider.boards)
+            save_boards(self.board_slider.json_file, self.board_slider.boards)
 
             # Determine the new selected board
             if selected_index > 0:
@@ -77,11 +77,12 @@ class BoardCustomizationMenu(State):
             # Recreate buttons with updated board list
             self.board_slider.buttons = self.board_slider.create_buttons()
 
-            # Adjust scrolling in case the last item was removed
-            self.max_scroll = max(0, len(self.board_slider.boards) * (self.board_slider.board_button_spacing + BUTTONS_HEIGHT) - self.board_slider.visible_area.height)
-            self.scroll_offset = min(self.board_slider.scroll_offset, self.board_slider.max_scroll)  # Prevent overscrolling
+            # Recalculate scroll values
+            self.board_slider.update_scrollbar()  # Recalculate max_scroll and scrollbar height
+            self.board_slider.scroll_offset = min(self.board_slider.scroll_offset, self.board_slider.max_scroll)  # Prevent overscrolling
         else:
             print("Cannot delete the Default board.")
+
         
     def handle_events(self, event):
         self.board_slider.handle_events(event)  # Handles button clicks & scroll

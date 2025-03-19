@@ -3,7 +3,7 @@ import json
 from config import BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, SCREEN_WIDTH, SCREEN_HEIGHT
 from button import ClickButton
 from board import Board
-from json_actions import load_boards, save_boards
+from json_actions import load_boards
 
 class ButtonSlider:
     def __init__(self, json_file, visible_area_width, visible_area_height, button_spacing, scrollbar_width, board_name):
@@ -124,4 +124,14 @@ class ButtonSlider:
 
             self.buttons = self.create_buttons()  # Refresh button positions
 
+    def update_scrollbar(self):
+        """Recalculate max_scroll and scrollbar height."""
+        self.max_scroll = max(0, len(self.boards) * (self.board_button_spacing + BUTTONS_HEIGHT) - self.visible_area.height)
+        self.scrollbar = pygame.Rect(self.visible_area.x + self.visible_area.width + 10, self.visible_area.y, self.scrollbar_width, self.visible_area.height)
+        self.update_scrollbar_height()
 
+    def update_scrollbar_height(self):
+        """Adjust the scrollbar height based on the number of boards."""
+        if self.max_scroll > 0:
+            scrollbar_height = self.visible_area.height * (self.visible_area.height / (len(self.boards) * (self.board_button_spacing + BUTTONS_HEIGHT)))
+            self.scrollbar.height = max(30, scrollbar_height)
