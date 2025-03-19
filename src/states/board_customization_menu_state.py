@@ -1,9 +1,7 @@
 import pygame
-import json
 from states.state import State
 from ui import draw_text
-from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT,RED,BLUE, FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, SMALL_FONT
-from board import Board
+from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT,RED,BLUE, FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, SMALL_FONT, FONT2
 from button_slider import ButtonSlider
 from button import ClickButton
 from json_actions import  save_boards
@@ -36,7 +34,13 @@ class BoardCustomizationMenu(State):
                 BUTTONS_HEIGHT, BUTTONS_WIDTH,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                action=lambda: self.select_board_and_go_back())
+                action=lambda: self.select_board_and_go_back()),
+                ClickButton("Create New Board",
+                SCREEN_WIDTH - BUTTONS_WIDTH*2  - 40, SCREEN_HEIGHT - 100,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
+                action=lambda: self.game.change_state("board_creation_menu"))
 ]
 
     def select_board_and_go_back(self):
