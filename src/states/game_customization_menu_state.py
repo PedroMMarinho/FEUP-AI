@@ -15,7 +15,6 @@ class GameCustomizationMenu(State):
         self.start_game = None
         self.back_button = None
         self.gameMode = gameMode
-        self.board = Board()
         self.difficulty_buttons = [
             Button("Easy", self.game.screen, BUTTONS_WIDTH,BUTTONS_HEIGHT,pygame.font.SysFont(None,BUTTON_FONT_SIZE),GREEN,BLACK), 
             Button("Medium", self.game.screen, BUTTONS_WIDTH,BUTTONS_HEIGHT,pygame.font.SysFont(None,BUTTON_FONT_SIZE),YELLOW,BLACK),
@@ -47,7 +46,7 @@ class GameCustomizationMenu(State):
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        action=lambda: self.game.change_state("game", self.gameMode, self.board)),
+                        action=lambda: self.game.change_state("game", self.gameMode)),
                     ClickButton("Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 3 + 150,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
@@ -81,7 +80,7 @@ class GameCustomizationMenu(State):
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        action=lambda: self.game.change_state("game", self.gameMode, self.board, self.piece_button.state , self.bot_difficulty)),
+                        action=lambda: self.game.change_state("game", self.gameMode, self.piece_button.state , self.bot_difficulty)),
                     ClickButton("Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 500 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
@@ -129,7 +128,7 @@ class GameCustomizationMenu(State):
                                 other_button.isSelected = False
                     '''
             elif self.gameMode == GameMode.AI_VS_AI and self.bot_difficulty is not None and self.bot_difficulty_2 is not None:
-                self.game.change_state("game", self.gameMode, self.board, self.piece_button.state ,self.bot_difficulty, self.bot_difficulty_2)
+                self.game.change_state("game", self.gameMode, self.piece_button.state ,self.bot_difficulty, self.bot_difficulty_2)
             elif self.gameMode == GameMode.AI_VS_AI:
                 for button in self.difficulty_buttons:
                     if button.collidepoint(x, y):

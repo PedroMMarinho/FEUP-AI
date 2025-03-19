@@ -7,13 +7,13 @@ from states.option_menu_state import OptionMenuState
 from states.game_customization_menu_state import GameCustomizationMenu
 from states.board_customization_menu_state import BoardCustomizationMenu
 
-
 class GameManager:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         pygame.display.set_caption("Yinsh")
         self.running = True
+        self.selected_board = "Default"
         self.state_stack = []  # Stack to track state history
         self.states = {
             "menu": MainMenuState(self),
