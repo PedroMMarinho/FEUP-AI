@@ -6,6 +6,7 @@ from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SC
 from board import Board
 from button_slider import ButtonSlider
 from button import ClickButton
+from json_actions import  save_boards
 
 class BoardCustomizationMenu(State):
     def __init__(self, game):
@@ -28,7 +29,7 @@ class BoardCustomizationMenu(State):
                 BUTTONS_HEIGHT, BUTTONS_WIDTH,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                action=lambda: self.board_slider.delete_board()),
+                action=lambda: self.delete_board()),
     
     ClickButton("Select Board",
                 SCREEN_WIDTH - BUTTONS_WIDTH - 20, SCREEN_HEIGHT - 100,
@@ -42,6 +43,41 @@ class BoardCustomizationMenu(State):
         """Sets the selected board and navigates back."""
         self.game.selected_board = self.board_slider.selected_board
         self.game.go_back()
+
+    def delete_board(self):
+        """Deletes a board from the JSON file and UI, and sets the selected board to the one above it."""
+        if self.board_slider.selected_board != "Default":
+            # Get list of board names
+            board_names = list(self.board_slider.boards.keys())
+
+            # Find index of the selected board
+            selected_index = board_names.index(self.board_slider.selected_board)
+
+            # Remove from memory
+            del self.board_slider.boards[self.board_slider.selected_board]
+
+            # Save updated list to JSON
+            save_boards(self.board_slider.json_file,self.board_slider.boards)
+
+            # Determine the new selected board
+            if selected_index > 0:
+                self.board_slider.selected_board = board_names[selected_index - 1]
+                self.game.selected_board = self.board_slider.selected_board  # Select the board above
+            elif len(self.board_slider.boards) > 0:
+                self.board_slider.selected_board = list(self.board_slider.boards.keys())[0]
+                self.game.selected_board = self.board_slider.selected_board
+            else:
+                self.selected_board = "Default"  
+                self.game.selected_board = self.board_slider.selected_board  # Select the board above
+
+            # Recreate buttons with updated board list
+            self.board_slider.buttons = self.board_slider.create_buttons()
+
+            # Adjust scrolling in case the last item was removed
+            self.max_scroll = max(0, len(self.board_slider.boards) * (self.board_slider.board_button_spacing + BUTTONS_HEIGHT) - self.board_slider.visible_area.height)
+            self.scroll_offset = min(self.board_slider.scroll_offset, self.board_slider.max_scroll)  # Prevent overscrolling
+        else:
+            print("Cannot delete the Default board.")
         
     def handle_events(self, event):
         self.board_slider.handle_events(event)  # Handles button clicks & scroll

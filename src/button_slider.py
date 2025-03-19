@@ -30,7 +30,6 @@ class ButtonSlider:
 
     def get_board_config(self):
         board = Board(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 250, 20)
-        print(self.selected_board)
         board.update_matrix(self.boards[self.selected_board]['layout'])
         return board
     
@@ -125,36 +124,4 @@ class ButtonSlider:
 
             self.buttons = self.create_buttons()  # Refresh button positions
 
-
-    def delete_board(self):
-        """Deletes a board from the JSON file and UI, and sets the selected board to the one above it."""
-        if self.selected_board != "Default":
-            # Get list of board names
-            board_names = list(self.boards.keys())
-
-            # Find index of the selected board
-            selected_index = board_names.index(self.selected_board)
-
-            # Remove from memory
-            del self.boards[self.selected_board]
-
-            # Save updated list to JSON
-            save_boards(self.json_file,self.boards)
-
-            # Determine the new selected board
-            if selected_index > 0:
-                self.selected_board = board_names[selected_index - 1]  # Select the board above
-            elif len(self.boards) > 0:
-                self.selected_board = list(self.boards.keys())[0]  # Select the first board if no board above
-            else:
-                self.selected_board = "Default"  # Fallback to default if no boards are left
-
-            # Recreate buttons with updated board list
-            self.buttons = self.create_buttons()
-
-            # Adjust scrolling in case the last item was removed
-            self.max_scroll = max(0, len(self.boards) * (self.board_button_spacing + BUTTONS_HEIGHT) - self.visible_area.height)
-            self.scroll_offset = min(self.scroll_offset, self.max_scroll)  # Prevent overscrolling
-        else:
-            print("Cannot delete the Default board.")
 
