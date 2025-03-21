@@ -24,7 +24,7 @@ class BoardAction(Enum):
     REMOVE_RING = "Remove Ring"
 
 class Board:
-    def __init__(self, x_offset=None, y_offset=None, radius=None):
+    def __init__(self, x_offset=None, y_offset=None, radius=None, matrix=None):
         self.sizeX = 11
         self.sizeY = 19
         self.radius = radius if radius is not None else 29
@@ -34,7 +34,7 @@ class Board:
         if y_offset is not None:
             self.y_offset = y_offset
 
-        self.matrix = self.createBoard() 
+        self.matrix = self.createBoard() if matrix is None else matrix
         self.vertices = self.createBoardVertices()
         self.phase = BoardPhase.PREP
         self.next_action = BoardAction.PLACE_RING

@@ -5,14 +5,16 @@ from ui import draw_text
 from states.state import State
 from board import Board, BoardPhase
 from mode import GameMode
+from json_actions import load_boards
 
 class GameState(State):
 
-    def __init__(self, game , mode ,board, player="White", bot1_mode=None, bot1_difficulty=None, bot2_mode=None, bot2_difficulty=None):
+    def __init__(self, game , mode, player="White", bot1_mode=None, bot1_difficulty=None, bot2_mode=None, bot2_difficulty=None):
         super().__init__(game)
         self.game_mode = mode
         self.game_type = "Normal"
-        self.board = Board() 
+        board_data = load_boards("src/boards.json")
+        self.board = Board(matrix=board_data[game.selected_board]['layout'])
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
         self.valid_ring_moves = []
