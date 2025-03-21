@@ -15,7 +15,7 @@ class ButtonSlider:
         self.scrollbar_width = scrollbar_width
         self.json_file = json_file
         # Define the visible area
-        self.visible_area = pygame.Rect(100, 150, visible_area_width, visible_area_height)
+        self.visible_area = pygame.Rect(45, 150, visible_area_width, visible_area_height)
         self.background_color = (220, 220, 220)  # Light gray background
         
         # Scrollbar properties
@@ -37,7 +37,7 @@ class ButtonSlider:
     def create_buttons(self):
         """Creates buttons with proper spacing and updates their visibility."""
         buttons = []
-        start_y = self.visible_area.y - self.scroll_offset
+        start_y = self.visible_area.y - self.scroll_offset + self.board_button_spacing
 
         for board_name in self.boards:
             if start_y + BUTTONS_HEIGHT > self.visible_area.y and start_y < self.visible_area.y + self.visible_area.height:

@@ -1,7 +1,7 @@
 import pygame
 from states.state import State
 from ui import draw_text, draw_input_box
-from config import BLACK, WHITE, FONT, SCREEN_WIDTH, SCREEN_HEIGHT, BUTTONS_HEIGHT, BUTTONS_WIDTH
+from config import BLACK, WHITE, FONT, SCREEN_WIDTH, SCREEN_HEIGHT, BUTTONS_HEIGHT, BUTTONS_WIDTH, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE
 from button import ClickButton
 from json_actions import load_boards, save_boards
 from board import Board
@@ -20,15 +20,15 @@ class BoardCreationMenu(State):
 
         self.action_buttons = [
             ClickButton("Save",
-                        SCREEN_WIDTH - BUTTONS_WIDTH - 20, SCREEN_HEIGHT - BUTTONS_HEIGHT - 40,  # Bottom left
+                        SCREEN_WIDTH - BUTTONS_WIDTH - 50, SCREEN_HEIGHT - BUTTONS_HEIGHT - 40,  # Bottom left
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
-                        FONT, (100, 200, 100), (50, 150, 50), (80, 180, 80), WHITE, (0, 255, 0), (0, 200, 0),
+                        FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.create_board()),
 
-            ClickButton("Back",
-                        20, SCREEN_HEIGHT - BUTTONS_HEIGHT - 40,  # Bottom right
+            ClickButton("Cancel",
+                        50, SCREEN_HEIGHT - BUTTONS_HEIGHT - 40,  # Bottom right
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
-                        FONT, (200, 100, 100), (150, 50, 50), (180, 80, 80), WHITE, (255, 0, 0), (200, 0, 0),
+                        FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.go_back())
         ]
 
@@ -59,15 +59,21 @@ class BoardCreationMenu(State):
     def handle_events(self, event):
         """Handles text input and button clicks."""
         if event.type == pygame.KEYDOWN:
+            ctrl_held = pygame.key.get_mods() & pygame.KMOD_CTRL  # Check if Ctrl is held
+
             if event.key == pygame.K_RETURN:
                 self.create_board()
             elif event.key == pygame.K_BACKSPACE:
-                self.input_text = self.input_text[:-1]
+                if ctrl_held:  
+                    self.input_text = ""  # Clear all text if Ctrl is held
+                elif self.input_text:
+                    self.input_text = self.input_text[:-1]  # Delete one character
             elif len(self.input_text) < 20:  # Prevent overflow (adjust max length as needed)
                 self.input_text += event.unicode
 
         for button in self.action_buttons:
             button.click(event)
+
 
     def draw(self):
         """Draws the board creation UI."""
