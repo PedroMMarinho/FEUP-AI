@@ -59,6 +59,9 @@ class Board:
         self.matrix = matrix
         self.vertices = self.createBoardVertices()
 
+    def clear_board_matrix(self):
+            self.matrix = self.createBoard()
+            
     def createBoard(self):
          
         board = [[-1,-1,-1,-1,0,-1,0,-1,-1,-1,-1], 
@@ -296,6 +299,8 @@ class Board:
         for (x,y) in black_markers:
             pygame.draw.circle(screen, PLAYER2_COLOR, (x, y), 12)
 
+
+            
         
 
     
