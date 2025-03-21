@@ -23,17 +23,17 @@ class GameManager:
         }
         self.current_state = self.states["menu"]
 
-    def change_state(self, new_state, *args):
+    def change_state(self, new_state, *args, **kwargs):
 
         if self.current_state:
             self.state_stack.append(self.current_state)  # Save the current state
 
         if new_state == "customization":
-            self.current_state = GameCustomizationMenu(self,*args)
+            self.current_state = GameCustomizationMenu(self,*args, **kwargs)
         elif new_state == "game":
             for i in args:
                 print (i)
-            self.current_state = GameState(self,*args)
+            self.current_state = GameState(self,*args, **kwargs)
         else:
             self.current_state = self.states[new_state]
 

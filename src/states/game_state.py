@@ -8,7 +8,7 @@ from mode import GameMode
 
 class GameState(State):
 
-    def __init__(self, game , mode ,board, player=1,bot1_difficulty=None, bot2_difficulty=None):
+    def __init__(self, game , mode ,board, player="White", bot1_mode=None, bot1_difficulty=None, bot2_mode=None, bot2_difficulty=None):
         super().__init__(game)
         self.game_mode = mode
         self.game_type = "Normal"
