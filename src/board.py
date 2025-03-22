@@ -44,11 +44,15 @@ class Board:
         self.marker_placed = False
         self.ring_pos = None
         self.remove_ring_phase = False
+        if matrix is not None:
+            self.reload_board()
+            if self.num_markers != 51:
+                self.phase = BoardPhase.GAME
+                self.next_action = BoardAction.PLACE_MARKER
 
     def __str__(self):
         """Return a string representation of the board matrix."""
         return "\n".join(" ".join(str(cell) for cell in row) for row in self.matrix)
-
 
 
     def calculate_offsets(self):
@@ -226,8 +230,8 @@ class Board:
             y = y + vectorY
         return moves
     
-    def check_5_line(self,player):
-        lines5 = dict()
+    def check_x_in_line(self, n, player):
+        all_lines = dict()
         visited = dict()
 
         for (x,y), (col, row) in self.vertices.items():
@@ -259,17 +263,29 @@ class Board:
 
                                 c += vectorX
                                 r += vectorY
-                        if len(line) >= 5: # TODO: Change to 5
-                            lines5.setdefault(direction, []).append(line)
+                        if len(line) >= n:
+                            all_lines.setdefault(direction, []).append(line)
 
-       # print(f"LINE5: {lines5}")
+       # print(f"LINE5: {all_lines}")
        # print(f"VISITED: {visited}")
        # print("-------------------------------")
-        if len(lines5) > 0:
+        if len(all_lines) > 0 and n == 5 :
             self.next_action = BoardAction.REMOVE_5LINE
-        return lines5
+        return all_lines
 
+    def dif_markers(self,player):
+        for row in range(self.sizeY):
+            for col in range(self.sizeX):
+                if self.matrix[row][col] == BoardSpaceType.PLAYER1_MARKER.value:
+                    marker_1+=1
+                elif self.matrix[row][col] == BoardSpaceType.PLAYER2_MARKER.value:
+                    marker_2+=1
+        if player == 1:
+            return marker_1 - marker_2
+        else:
+            return marker_2 - marker_1
 
+    #error
     def remove_markers(self,sequence):
         for (x,y) in sequence:
             (col, row) = self.vertices[(x,y)]

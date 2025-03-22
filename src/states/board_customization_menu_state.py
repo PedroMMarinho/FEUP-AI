@@ -23,7 +23,7 @@ class BoardCustomizationMenu(State):
                 action=lambda: self.game.go_back()),
     
     ClickButton("Delete Board",
-                SCREEN_WIDTH // 3 - BUTTONS_WIDTH - 30, SCREEN_HEIGHT - 200,
+                SCREEN_WIDTH - BUTTONS_WIDTH*2 + 25 , SCREEN_HEIGHT - 100,
                 BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
@@ -36,7 +36,7 @@ class BoardCustomizationMenu(State):
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                 action=lambda: self.select_board_and_go_back()),
     ClickButton("New Board",
-                SCREEN_WIDTH - BUTTONS_WIDTH*2 + 25 , SCREEN_HEIGHT - 100,
+                SCREEN_WIDTH // 3 - BUTTONS_WIDTH - 30, SCREEN_HEIGHT - 200,
                 BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,

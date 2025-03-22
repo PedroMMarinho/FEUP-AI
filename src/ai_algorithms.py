@@ -17,15 +17,12 @@ class Node:
              exploration_constant = 2
         else:
             exploration_constant = 0.7
-        #print(f"TOTOAL {total_visits}")
-        """Calculate the UCT value for the node."""
         if self.visits == 0:
             return float('inf')
         return (self.wins / self.visits) + exploration_constant * (math.sqrt(math.log(total_visits) / self.visits))
     
     def __str__(self):
-            """Return a string representation of the Node."""
-            return f"Visits: {self.visits}, Wins: {self.wins}"
+        return f"Visits: {self.visits}, Wins: {self.wins}"
 
 
 class MonteCarlo:
@@ -110,3 +107,61 @@ class MonteCarlo:
 
         # Return the result of the game (win or loss)
         return state.get_result()
+    
+
+
+class MinMax:
+
+    def best_move(state,depth):
+        best_val = float('-inf')
+        best_move = None
+        alpha, beta = float('-inf'), float('inf')
+        start = time.time()
+        for move in state.legal_moves():
+            copy_state = copy.deepcopy(state)
+            if state.active_connect5:
+                copy_state.handle_action(seq=move, simul=True)
+            else:
+                copy_state.handle_action(pos=move, simul=True)
+            move_val = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
+            if move_val > best_val:
+                best_val = move_val
+                best_move = move
+            alpha = max(alpha, best_val)
+        end = time.time()
+        while end - start < 2: # Min 2 sec play
+            end = time.time()
+        return best_move
+
+    def minimax_alpha_beta(state, depth, alpha, beta, maximizing):
+        if depth == 0 or state.check_game_over():
+            return state.evaluate()
+
+        if maximizing:
+            max_eval = float('-inf')
+            for move in state.legal_moves():
+                copy_state = copy.deepcopy(state)
+                if state.active_connect5:
+                    copy_state.handle_action(seq=move, simul=True)
+                else:
+                    copy_state.handle_action(pos=move, simul=True)
+                eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break  
+            return max_eval
+        else:
+            min_eval = float('inf')
+            for move in state.legal_moves():
+                copy_state = copy.deepcopy(state)
+                if state.active_connect5:
+                    copy_state.handle_action(seq=move, simul=True)
+                else:
+                    copy_state.handle_action(pos=move, simul=True)
+                eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, True)
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break  
+            return min_eval

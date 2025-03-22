@@ -4,7 +4,7 @@ from states.state import State
 from board import BoardPhase
 from mode import GameMode
 import copy
-from monte_carlo import MonteCarlo
+from ai_algorithms import MonteCarlo, MinMax
 
 class GameState(State):
 
@@ -15,6 +15,8 @@ class GameState(State):
         self.board = board
         self.player = 1
         self.valid_moves = self.board.valid_moves(self.player)
+        self.game_over = False
+        self.winner = None
         #Mode Player_AI
         self.player_pieces = player
         # Player needs
@@ -33,11 +35,7 @@ class GameState(State):
         self.bot2_difficulty = bot2_difficulty
         self.ai_has_moved = False
 
-        self.game_over = False
-        self.winner = None
-
     def __str__(self):
-        """Return a string representation of the GameState."""
         return (f"GameState(\n"
                 f"  Game Mode: {self.game_mode},\n"
                 f"  Game Type: {self.game_type},\n"
@@ -50,11 +48,7 @@ class GameState(State):
                 f"  AI Has Moved: {self.ai_has_moved}\n"
                 f")")
 
-
-    def is_ai_turn(self):
-        return (self.game_mode == GameMode.PLAYER_VS_AI and ((self.player == 1 and self.player_pieces == "Black") or (self.player == 2 and self.player_pieces == "White"))) or self.game_mode == GameMode.AI_VS_AI
-
-
+    # Handles AI Play
     def handle_ai(self):
         self.ai_has_moved = True
 
@@ -65,13 +59,13 @@ class GameState(State):
         simulated_state = copy.deepcopy(self)
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MinMax":
-                move = self.minmax_move(simulated_state,self.bot1_difficulty)
+                move = MinMax.best_move(simulated_state,self.bot1_difficulty)
                 self.handle_action(move)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty)
         elif self.game_mode == GameMode.AI_VS_AI:
             if self.bot2_mode == "MinMax":
-                move = self.minmax_move(simulated_state,self.bot2_difficulty)
+                move = MinMax.best_move(simulated_state,self.bot2_difficulty)
                 self.handle_action(move)
 
             else:
@@ -79,113 +73,9 @@ class GameState(State):
 
         self.ai_has_moved = False
         return self
-        
-
-    # usar valid moves, quando 0 check activeconnect 5 if active  usar line5 mudar dados para ser so escolher
-    def minmax_move(self,simulated_state,depth):
-        pass
-
-
-    def create_possible_choices(self):
-        possible_choices = []
-
-        for sequences in self.line5.values():
-            for sequence in sequences:
-                for i in range(len(sequence) - 4):  # TODO: Change to 4 when group of 5 
-                    group = sequence[i:i + 5]  # TODO: Change to 5 when group of 5 
-                    possible_choices.append(group)
-
-        return possible_choices
-
-
-    def legal_moves(self):
-        if self.active_connect5:
-            return self.create_possible_choices()
-        else:
-            return self.valid_moves
-        
-    def get_result(self):
-        if self.board.phase == BoardPhase.GAME and self.player == 1 and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2) :
-            return 1
-        elif self.board.phase == BoardPhase.GAME and self.player == 2 and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2) :
-            return 1
-        return 0
     
 
-    def handle_move(self,x,y, simul=False):
-        if self.board.phase == BoardPhase.PREP:
-            self.board.perform_move((x,y), (0,0), self.player)
-            self.change_player()
-        elif self.board.phase == BoardPhase.GAME:
-            if not self.board.marker_placed and not self.board.remove_ring_phase:
-                self.board.perform_move((x,y), (0,0), self.player)
-                self.board.marker_placed = True
-                self.board.num_markers -= 1
-                self.board.ring_pos = (x,y)
-            elif not self.active_connect5 and not self.board.remove_ring_phase:
-                self.board.perform_move(self.board.ring_pos, (x,y), self.player)
-                self.line5_end_turn = True
-                self.verify_5line()
-
-                if not self.active_connect5:
-                    self.board.marker_placed = False
-                    self.board.ring_pos = None
-                    self.change_player()
-
-            elif self.board.remove_ring_phase:
-              #  print("REMOVE RING STATE")
-                self.board.remove_ring((x,y))
-                self.board.remove_ring_phase = False
-                self.board.marker_placed = False
-                self.board.ring_pos = None
-                if self.player == 1:
-                    self.board.num_rings1 -= 1
-                    if self.check_game_over() and not simul:
-                        self.game_over = True
-                        self.winner = 1                            
-                else: 
-                    self.board.num_rings2 -= 1
-                    if self.check_game_over() and not simul:
-                        self.game_over = True
-                        self.winner = 2
-
-
-                if self.line5_end_turn:
-                    self.change_player()
-
-    def check_game_over(self):
-        if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2 ):
-            return True
-        if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 ):
-            return True
-        return False
-
-
-    def handle_action(self, pos=None, seq=None, simul=False):
-        if len(self.valid_moves) == 0 and self.active_connect5:
-          #  print("REMOVE MARKERS STATE")
-            self.board.remove_markers(seq)
-            self.board.remove_ring_phase = True
-            self.active_connect5 = False
-            self.valid_connect5 = []
-        else:
-            x,y = pos
-            if self.is_ai_turn():
-                self.handle_move(x, y, simul=simul)
-            else:
-                for (valid_x,valid_y) in self.valid_moves:
-                    if self.is_within_hitbox(x, y, valid_x, valid_y):
-                        #print(valid_x,valid_y)
-                        self.handle_move(valid_x, valid_y)
-                        break
-        
-        if self.active_connect5:
-            self.valid_moves = []
-        else:
-            self.valid_moves = self.board.valid_moves(self.player)
-
-        return self
-
+    # Handles Player Play
     def handle_events(self,event):
         self.valid_ring_moves = []
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -269,18 +159,85 @@ class GameState(State):
                                 #print(f"Appending case impar -- Idx {index} | Seq {self.selected_sequence}")
                                 self.possible_sequences.append(self.selected_sequence[index:])
 
-                            
-    def verify_5line(self):
-        self.line5 = self.board.check_5_line(self.player)
-        self.active_connect5 = len(self.line5) > 0               
 
+    # Starting point game logic - validation and next valid moves
+    def handle_action(self, pos=None, seq=None, simul=False):
+        if len(self.valid_moves) == 0 and self.active_connect5:
+          #  print("REMOVE MARKERS STATE")
+            self.board.remove_markers(seq)
+            self.board.remove_ring_phase = True
+            self.active_connect5 = False
+            self.valid_connect5 = []
+        else:
+            x,y = pos
+            if self.is_ai_turn():
+                self.handle_move(x, y, simul=simul)
+            else:
+                for (valid_x,valid_y) in self.valid_moves:
+                    if self.is_within_hitbox(x, y, valid_x, valid_y):
+                        self.handle_move(valid_x, valid_y)
+                        break
+        
+        if self.active_connect5:
+            self.valid_moves = []
+        else:
+            self.valid_moves = self.board.valid_moves(self.player)
+
+        return self
+
+
+    # Game logic - Does actual move
+    def handle_move(self,x,y, simul=False):
+        if self.board.phase == BoardPhase.PREP:
+            self.board.perform_move((x,y), (0,0), self.player)
+            self.change_player()
+        elif self.board.phase == BoardPhase.GAME:
+            if not self.board.marker_placed and not self.board.remove_ring_phase:
+                self.board.perform_move((x,y), (0,0), self.player)
+                self.board.marker_placed = True
+                self.board.num_markers -= 1
+                self.board.ring_pos = (x,y)
+            elif not self.active_connect5 and not self.board.remove_ring_phase:
+                self.board.perform_move(self.board.ring_pos, (x,y), self.player)
+                self.line5_end_turn = True
+                self.verify_5line()
+                if not self.active_connect5:
+                    self.board.marker_placed = False
+                    self.board.ring_pos = None
+                    self.change_player()
+            elif self.board.remove_ring_phase:
+              #  print("REMOVE RING STATE")
+                self.board.remove_ring((x,y))
+                self.board.remove_ring_phase = False
+                self.board.marker_placed = False
+                self.board.ring_pos = None
+                if self.player == 1:
+                    self.board.num_rings1 -= 1
+                    if self.check_game_over() and not simul:
+                        self.game_over = True
+                        self.winner = 1                            
+                else: 
+                    self.board.num_rings2 -= 1
+                    if self.check_game_over() and not simul:
+                        self.game_over = True
+                        self.winner = 2
+                if self.line5_end_turn:
+                    self.change_player()
+
+
+    # Utility funcitons
+
+    # Check if mouse pos is within hitbox
     def is_within_hitbox(self, mouse_x, mouse_y, piece_x, piece_y):
-        """
-        Checks if the mouse click is within the hitbox (a circle around the piece).
-        """
         distance = math.sqrt((mouse_x - piece_x) ** 2 + (mouse_y - piece_y) ** 2)
         return distance <= 12
 
+    # Verify if 5 markers in line
+    def verify_5line(self):
+        self.line5 = self.board.check_x_in_line(5,self.player)
+        self.active_connect5 = len(self.line5) > 0               
+
+    # Changes player turn
     def change_player(self):
         if self.player == 1:
             self.player = 2
@@ -290,4 +247,72 @@ class GameState(State):
         self.line5_end_turn = False
         self.verify_5line()
 
-            
+    # Checks if is game over state 
+    def check_game_over(self):
+        if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2 ):
+            return True
+        if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 ):
+            return True
+        return False
+    
+
+    # Checks if is ai turn
+    def is_ai_turn(self):
+        return (self.game_mode == GameMode.PLAYER_VS_AI and ((self.player == 1 and self.player_pieces == "Black") or (self.player == 2 and self.player_pieces == "White"))) or self.game_mode == GameMode.AI_VS_AI
+
+    # AI - When n in line creates a list with valid selections
+    def create_possible_choices(self, dic, n):
+        possible_choices = []
+        for sequences in dic.values():
+            for sequence in sequences:
+                for i in range(len(sequence) - (n-1)):  
+                    group = sequence[i:i + n] 
+                    possible_choices.append(group)        
+        return possible_choices
+
+    # AI - Valid moves
+    def legal_moves(self):
+        if self.active_connect5:
+            return self.create_possible_choices(self.line5, 5)
+        else:
+            return self.valid_moves
+
+    # AI(MonteCarlo) - Used in simulation phase of montecarlo, checks if player wins or lose the game 
+    def get_result(self):
+        if self.board.phase == BoardPhase.GAME and self.player == 1 and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2) :
+            return 1
+        elif self.board.phase == BoardPhase.GAME and self.player == 2 and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2) :
+            return 1
+        return 0
+    
+
+    # AI(Minimax) - Heuristics
+
+    def evaluate(self):
+        return 0.5*self.inline_2() + self.inline_2() + 1.5*self.inline_3() + 3*self.inline_4()
+
+    # grupos sobresposts??
+    def inline_2(self):
+        dic = self.board.check_x_in_line(2,self.player)
+        list = self.create_possible_choices(dic,2)
+        return len(list)
+
+    def inline_3(self):
+        dic = self.board.check_x_in_line(3,self.player)
+        list = self.create_possible_choices(dic,3)
+        return len(list)
+    
+
+    def inline_4(self):
+        dic = self.board.check_x_in_line(4,self.player)
+        list = self.create_possible_choices(dic,4)
+        return len(list)
+    
+    def inline_5(self):
+        dic = self.board.check_x_in_line(5,self.player)
+        list = self.create_possible_choices(dic,5)
+        return len(list)
+    
+    #valor pos e neg?
+    def dif_markers(self):
+        return self.board.dif_markers(self.player)
