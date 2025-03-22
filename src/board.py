@@ -59,10 +59,26 @@ class Board:
         self.x_offset = (SCREEN_WIDTH - board_width) // 2
         self.y_offset = (SCREEN_HEIGHT - (board_height + board_height/10)) // 2
 
-
+    def reload_board(self):
+        for row in range(self.sizeY):
+            for col in range(self.sizeX):
+                matrix_elem = self.matrix[row][col]
+                if matrix_elem == BoardSpaceType.PLAYER1_MARKER.value or matrix_elem == BoardSpaceType.PLAYER2_MARKER.value:
+                    self.num_markers -= 1
+                elif matrix_elem == BoardSpaceType.PLAYER1_RING.value:
+                    self.num_rings1 += 1
+                elif matrix_elem == BoardSpaceType.PLAYER2_RING.value:
+                    self.num_rings2 += 1
+                
     def update_matrix(self, matrix):
         self.matrix = matrix
         self.vertices = self.createBoardVertices()
+
+    def clear_board(self):
+            self.matrix = self.createBoard()
+            self.num_rings1 = 0
+            self.num_rings2 = 0
+            self.num_markers = 51
 
     def createBoard(self):
          
@@ -301,6 +317,8 @@ class Board:
         for (x,y) in black_markers:
             pygame.draw.circle(screen, PLAYER2_COLOR, (x, y), 12)
 
+
+            
         
 
     

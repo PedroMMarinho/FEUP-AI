@@ -13,34 +13,41 @@ class BoardCustomizationMenu(State):
         # Configurable values 
         self.board_button_width = BUTTONS_WIDTH
         self.board_button_height = BUTTONS_HEIGHT
-        self.board_slider = ButtonSlider("src/boards.json", SCREEN_WIDTH // 4 + 20, SCREEN_HEIGHT // 2 + 20, 10, 15, game.selected_board)
+        self.board_slider = ButtonSlider("src/boards.json", SCREEN_WIDTH // 4 + 20, SCREEN_HEIGHT // 2 + 20, 10, 10, game.selected_board)
         self.action_buttons = [
     ClickButton("Back", 
-                SCREEN_WIDTH // 3 - BUTTONS_WIDTH, SCREEN_HEIGHT - 100,
-                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                SCREEN_WIDTH // 3 - BUTTONS_WIDTH - 30, SCREEN_HEIGHT - 100,
+                BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                 action=lambda: self.game.go_back()),
     
     ClickButton("Delete Board",
-                SCREEN_WIDTH // 3 - BUTTONS_WIDTH, SCREEN_HEIGHT - 200,
-                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                SCREEN_WIDTH // 3 - BUTTONS_WIDTH - 30, SCREEN_HEIGHT - 200,
+                BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                 action=lambda: self.delete_board()),
     
     ClickButton("Select Board",
-                SCREEN_WIDTH - BUTTONS_WIDTH - 20, SCREEN_HEIGHT - 100,
-                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                SCREEN_WIDTH - BUTTONS_WIDTH, SCREEN_HEIGHT - 100,
+                BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                 action=lambda: self.select_board_and_go_back()),
-                ClickButton("Create New Board",
-                SCREEN_WIDTH - BUTTONS_WIDTH*2  - 40, SCREEN_HEIGHT - 100,
-                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+    ClickButton("New Board",
+                SCREEN_WIDTH - BUTTONS_WIDTH*2 + 25 , SCREEN_HEIGHT - 100,
+                BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                action=lambda: self.game.change_state("board_creation_menu"))
+                action=lambda: self.game.change_state("board_creation_menu")),
+    ClickButton("Edit Board",
+                SCREEN_WIDTH - BUTTONS_WIDTH*3 + 50, SCREEN_HEIGHT - 100,
+                BUTTONS_HEIGHT, 250,
+                FONT,
+                LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
+                action=lambda: self.game.change_state("board_creation_menu", self.board_slider.board.matrix, self.board_slider.selected_board
+                ))
 ]
 
     def select_board_and_go_back(self):
@@ -102,7 +109,16 @@ class BoardCustomizationMenu(State):
         self.board_slider.draw(screen)
 
         # Draw the selected board
-        draw_text(screen, f"Selected Board Preview: {self.board_slider.selected_board}", SMALL_FONT, BLACK, SCREEN_WIDTH // 2 - SMALL_FONT.size(f"Selected Board Preview: {self.board_slider.selected_board}")[0] // 2 + 220 , 100)
+        # Draw "Selected Board Preview:" first
+        text1 = "Selected Board Preview:"
+        text1_x = SCREEN_WIDTH // 2 - SMALL_FONT.size(text1)[0] // 2 + 120
+        draw_text(screen, text1, SMALL_FONT, BLACK, text1_x, 120)
+
+        # Draw the selected board right after text1
+        text2 = self.board_slider.selected_board
+        text2_x = text1_x + SMALL_FONT.size(text1)[0] + 10  # Add some spacing
+        draw_text(screen, text2, FONT, STEEL_BLUE, text2_x, 115)
+
         self.board_slider.board.draw(screen)
         # Draw the back button
         for button in self.action_buttons:

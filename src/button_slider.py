@@ -1,6 +1,6 @@
 import pygame
 import json
-from config import BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, SCREEN_WIDTH, SCREEN_HEIGHT
+from config import BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, SCREEN_WIDTH, SCREEN_HEIGHT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, WHITE
 from button import ClickButton
 from board import Board
 from json_actions import load_boards
@@ -15,7 +15,7 @@ class ButtonSlider:
         self.scrollbar_width = scrollbar_width
         self.json_file = json_file
         # Define the visible area
-        self.visible_area = pygame.Rect(100, 150, visible_area_width, visible_area_height)
+        self.visible_area = pygame.Rect(45, 150, visible_area_width, visible_area_height)
         self.background_color = (220, 220, 220)  # Light gray background
         
         # Scrollbar properties
@@ -37,7 +37,7 @@ class ButtonSlider:
     def create_buttons(self):
         """Creates buttons with proper spacing and updates their visibility."""
         buttons = []
-        start_y = self.visible_area.y - self.scroll_offset
+        start_y = self.visible_area.y - self.scroll_offset + self.board_button_spacing
 
         for board_name in self.boards:
             if start_y + BUTTONS_HEIGHT > self.visible_area.y and start_y < self.visible_area.y + self.visible_area.height:
@@ -48,10 +48,10 @@ class ButtonSlider:
                     height=BUTTONS_HEIGHT,
                     width=BUTTONS_WIDTH,
                     font=FONT,
-                    button_color=(200, 200, 200),
-                    text_color=(0, 0, 0),
-                    hover_color=(100, 100, 100),
-                    hover_text_color=(0, 0, 255),
+                    button_color=LIGHT_CYAN,
+                    text_color=STEEL_BLUE,
+                    hover_color=POWER_BLUE,
+                    hover_text_color=CADET_BLUE,
                     action=lambda name=board_name: self.select_board(name)
                 )
                 buttons.append(button)
@@ -69,9 +69,11 @@ class ButtonSlider:
         for button in self.buttons:
             if self.visible_area.y <= button.y <= self.visible_area.y + self.visible_area.height - BUTTONS_HEIGHT:
                 if button.text == self.selected_board:
-                    button.color = (200, 150, 0)
+                    button.color = CADET_BLUE
+                    button.text_color = WHITE
                 else:
-                    button.color = (200, 200, 200)
+                    button.color = LIGHT_CYAN
+                    button.text_color = STEEL_BLUE
                 button.draw(screen)
 
     def draw_scrollbar(self, screen):
