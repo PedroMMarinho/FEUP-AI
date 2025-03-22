@@ -1,6 +1,6 @@
 import pygame
 import json
-from config import BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, SCREEN_WIDTH, SCREEN_HEIGHT
+from config import BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, SCREEN_WIDTH, SCREEN_HEIGHT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, WHITE
 from button import ClickButton
 from board import Board
 from json_actions import load_boards
@@ -48,10 +48,10 @@ class ButtonSlider:
                     height=BUTTONS_HEIGHT,
                     width=BUTTONS_WIDTH,
                     font=FONT,
-                    button_color=(200, 200, 200),
-                    text_color=(0, 0, 0),
-                    hover_color=(100, 100, 100),
-                    hover_text_color=(0, 0, 255),
+                    button_color=LIGHT_CYAN,
+                    text_color=STEEL_BLUE,
+                    hover_color=POWER_BLUE,
+                    hover_text_color=CADET_BLUE,
                     action=lambda name=board_name: self.select_board(name)
                 )
                 buttons.append(button)
@@ -69,9 +69,11 @@ class ButtonSlider:
         for button in self.buttons:
             if self.visible_area.y <= button.y <= self.visible_area.y + self.visible_area.height - BUTTONS_HEIGHT:
                 if button.text == self.selected_board:
-                    button.color = (200, 150, 0)
+                    button.color = CADET_BLUE
+                    button.text_color = WHITE
                 else:
-                    button.color = (200, 200, 200)
+                    button.color = LIGHT_CYAN
+                    button.text_color = STEEL_BLUE
                 button.draw(screen)
 
     def draw_scrollbar(self, screen):

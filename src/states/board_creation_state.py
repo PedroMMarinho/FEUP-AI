@@ -9,16 +9,23 @@ from tool_slider import ToolSlider, ToolType
 import time  # Import time module to track error message duration
 
 class BoardCreationMenu(State):
-    def __init__(self, game):
+    def __init__(self, game, board_matrix=None, board_name=None):
         super().__init__(game)
-        self.input_text = ""  # For board name input
+        self.input_text = board_name if board_name else ""  # Store the board name
+        self.original_text = self.input_text  # Store the original text
         self.error_message = ""
         self.error_time = 0  # Time when the error message appeared
         self.input_box = pygame.Rect(60, SCREEN_HEIGHT - 2 * BUTTONS_HEIGHT - 50, 200, 50)
         self.tool_slider = ToolSlider(SCREEN_WIDTH - 200, 160)  # Create a tool slider
         # Create an empty board
         self.board = Board()
-        self.mouse_down = False #Variable to control if mouse is pressed.
+        self.mode = "Create"
+        if board_matrix:
+            self.mode = "Edit"
+            self.board.update_matrix(board_matrix)
+            self.board.reload_board()
+        
+        self.mouse_down = False # Variable to control if mouse is pressed.
 
         self.action_buttons = [
             ClickButton("Save",
@@ -36,7 +43,7 @@ class BoardCreationMenu(State):
                         SCREEN_WIDTH - BUTTONS_WIDTH * 3 // 4 - 40, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT,  # Bottom center
                         BUTTONS_HEIGHT, BUTTONS_WIDTH * 3 // 4,
                         FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        action=lambda: self.board.clear_board_matrix())
+                        action=lambda: self.board.clear_board())
         ]
 
 
@@ -51,18 +58,24 @@ class BoardCreationMenu(State):
         boards = load_boards("src/boards.json")
 
         # Check if board name already exists
-        if self.input_text in boards:
+        if self.input_text in boards and self.input_text != self.original_text:
             self.error_message = "Board name already exists!"
             self.error_time = time.time()  # Store the time when error occurred
             return
 
-        # Save the current board matrix
-        boards[self.input_text] = {"layout": self.board.matrix}  # Use the current board's matrix
+        if self.input_text != self.original_text and self.original_text in boards:
+            boards[self.input_text] = boards.pop(self.original_text) #Rename the board
+            boards[self.input_text]["layout"] = self.board.matrix #Updates the layout
+        else:
+            boards[self.input_text] = {"layout": self.board.matrix} #create a new board.
+  
         save_boards("src/boards.json", boards)
 
         # Set as selected board and go back
         self.game.selected_board = self.input_text
         self.game.change_without_save("initial_board_customization")
+
+
 
     def handle_events(self, event):
         """Handles text input, button clicks, and board modifications."""
@@ -103,14 +116,29 @@ class BoardCreationMenu(State):
                 tool_value = None
 
                 if tool == ToolType.BLACK_MARKER:
-                    tool_value = BoardSpaceType.PLAYER2_MARKER.value
+                    if self.board.num_markers > 0 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                        tool_value = BoardSpaceType.PLAYER2_MARKER.value
+                        self.board.num_markers -= 1
                 elif tool == ToolType.WHITE_MARKER:
-                    tool_value = BoardSpaceType.PLAYER1_MARKER.value
+                    if self.board.num_markers > 0 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                        tool_value = BoardSpaceType.PLAYER1_MARKER.value
+                        self.board.num_markers -= 1
                 elif tool == ToolType.BLACK_RING:
-                    tool_value = BoardSpaceType.PLAYER2_RING.value
+                    if self.board.num_rings2 < 5 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                        tool_value = BoardSpaceType.PLAYER2_RING.value
+                        self.board.num_rings2 += 1
                 elif tool == ToolType.WHITE_RING:
-                    tool_value = BoardSpaceType.PLAYER1_RING.value
+                    if self.board.num_rings1 < 5 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                        tool_value = BoardSpaceType.PLAYER1_RING.value
+                        self.board.num_rings1 += 1
                 elif tool == ToolType.RUBBER:
+                    current_value = self.board.matrix[row][col]
+                    if current_value == BoardSpaceType.PLAYER1_MARKER.value or current_value == BoardSpaceType.PLAYER2_MARKER.value:
+                        self.board.num_markers += 1
+                    elif current_value == BoardSpaceType.PLAYER1_RING.value:
+                        self.board.num_rings1 -= 1
+                    elif current_value == BoardSpaceType.PLAYER2_RING.value:
+                        self.board.num_rings2 -= 1
                     tool_value = BoardSpaceType.EMPTY.value
 
                 if tool_value is not None:
@@ -121,7 +149,8 @@ class BoardCreationMenu(State):
     def draw(self):
         """Draws the board creation UI."""
         screen = self.game.screen
-        draw_text(screen, "Create New Board", FONT, BLACK, SCREEN_WIDTH // 2 - FONT.size("Create New Board")[0] // 2, 50)
+        title = "Edit Board" if self.mode == "Edit" else "Create New Board"
+        draw_text(screen, title, FONT, BLACK, SCREEN_WIDTH // 2 - FONT.size(title)[0] // 2, 50)
 
         # Draw the current board
         self.board.draw(screen)

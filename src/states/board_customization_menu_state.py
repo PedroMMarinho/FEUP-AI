@@ -46,7 +46,7 @@ class BoardCustomizationMenu(State):
                 BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                action=lambda: self.game.change_state("board_creation_menu", self.board_slider.selected
+                action=lambda: self.game.change_state("board_creation_menu", self.board_slider.board.matrix, self.board_slider.selected_board
                 ))
 ]
 
@@ -109,7 +109,16 @@ class BoardCustomizationMenu(State):
         self.board_slider.draw(screen)
 
         # Draw the selected board
-        draw_text(screen, f"Selected Board Preview: {self.board_slider.selected_board}", SMALL_FONT, BLACK, SCREEN_WIDTH // 2 - SMALL_FONT.size(f"Selected Board Preview: {self.board_slider.selected_board}")[0] // 2 + 220 , 100)
+        # Draw "Selected Board Preview:" first
+        text1 = "Selected Board Preview:"
+        text1_x = SCREEN_WIDTH // 2 - SMALL_FONT.size(text1)[0] // 2 + 120
+        draw_text(screen, text1, SMALL_FONT, BLACK, text1_x, 120)
+
+        # Draw the selected board right after text1
+        text2 = self.board_slider.selected_board
+        text2_x = text1_x + SMALL_FONT.size(text1)[0] + 10  # Add some spacing
+        draw_text(screen, text2, FONT, STEEL_BLUE, text2_x, 115)
+
         self.board_slider.board.draw(screen)
         # Draw the back button
         for button in self.action_buttons:

@@ -39,7 +39,7 @@ class GameManager:
         elif new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)
         elif new_state == "board_creation_menu":
-            self.current_state = BoardCreationMenu(self)
+            self.current_state = BoardCreationMenu(self,*args)
         else:
             self.current_state = self.states[new_state]
 
