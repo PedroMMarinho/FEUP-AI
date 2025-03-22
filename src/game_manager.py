@@ -1,12 +1,13 @@
 import pygame
 import config
 from states.main_menu_state import MainMenuState
-from states.game_state import GameState
+from states.game import Game
 from states.instructions_state import InstructionsState
 from states.option_menu_state import OptionMenuState
 from states.game_customization_menu_state import GameCustomizationMenu
 from states.board_customization_menu_state import BoardCustomizationMenu
 from states.board_creation_state import BoardCreationMenu
+from states.game_over import GameOver
 
 class GameManager:
     def __init__(self):
@@ -35,7 +36,11 @@ class GameManager:
         elif new_state == "game":
             for i in args:
                 print (i)
-            self.current_state = GameState(self,*args, **kwargs)
+            self.current_state = Game(self,*args, **kwargs)
+        elif new_state == "game_over":
+            for i in args:
+                print (i)
+            self.current_state = GameOver(self,*args, **kwargs)
         elif new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)
         elif new_state == "board_creation_menu":
@@ -68,10 +73,20 @@ class GameManager:
         
     def run(self):
         while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                self.current_state.handle_events(event)
+            if isinstance(self.current_state, Game) and self.current_state.state.is_ai_turn():
+                if not self.current_state.state.ai_has_moved:
+                    new_state = self.current_state.state.handle_ai()
+                    if new_state is not None:
+                        self.current_state.state = new_state
+                    else:
+                        self.change_state("game_over", winner=self.current_state.state.winner)
+            else:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.running = False
+                    self.current_state.handle_events(event)
+                
+
             
             self.draw_gradient_background((222, 247, 247), (240, 247, 255))
             self.current_state.draw()

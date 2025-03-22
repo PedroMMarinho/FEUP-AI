@@ -33,20 +33,23 @@ class GameCustomizationMenu(State):
         match self.gameMode:
             case GameMode.PLAYER_VS_PLAYER:
                 self.buttons.extend([
-                    ClickButton("Start Game", 
+                    ClickButton(
+                        "Start Game", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 3 + 50,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("game", mode=self.gameMode)),
 
-                    ClickButton("Custom Init Board", 
+                    ClickButton(
+                        "Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 3 + 150,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("initial_board_customization")),
-                    ClickButton("Go Back", 
+                    ClickButton(
+                        "Go Back", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 + BUTTONS_HEIGHT + 50,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
@@ -109,20 +112,23 @@ class GameCustomizationMenu(State):
                         lambda: self.change_start_piece(),
                         "Black", (30,58,95), WHITE, (50,80,120), WHITE, CADET_BLUE, CADET_BLUE,
                         ),
-                    ClickButton("Start Game", 
+                    ClickButton(
+                        "Start Game", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 425 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("game", mode=self.gameMode, player=self.start_piece , bot1_mode=self.bot1_mode,
                                                               bot1_difficulty=self.bot1_minMax if self.bot1_mode == "MinMax" else self.bot1_monteCarlo)),
-                    ClickButton("Custom Init Board", 
+                    ClickButton(
+                        "Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 505 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("initial_board_customization")),
-                    ClickButton("Go Back", 
+                    ClickButton(
+                        "Go Back", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 585 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
@@ -220,7 +226,8 @@ class GameCustomizationMenu(State):
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         lambda: self.change_montecarlo_time(2,"+")),                  
-                    ClickButton("Start Game", 
+                    ClickButton(
+                        "Start Game", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 425 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
@@ -228,13 +235,15 @@ class GameCustomizationMenu(State):
                         action=lambda: self.game.change_state("game", mode=self.gameMode, bot1_mode=self.bot1_mode, bot2_mode=self.bot2_mode,
                                                               bot1_difficulty=self.bot1_minMax if self.bot1_mode == "MinMax" else self.bot1_monteCarlo,
                                                               bot2_difficulty=self.bot2_minMax if self.bot2_mode == "MinMax" else self.bot2_monteCarlo)),
-                    ClickButton("Custom Init Board", 
+                    ClickButton(
+                        "Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 505 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("initial_board_customization")),
-                    ClickButton("Go Back", 
+                    ClickButton(
+                        "Go Back", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 585 + 2 * BUTTONS_HEIGHT,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,

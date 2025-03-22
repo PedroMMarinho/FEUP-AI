@@ -10,9 +10,6 @@ class MainMenuState(State):
 
     def __init__(self, game):
         super().__init__(game)
-        self.play_button = None
-        self.instructions_button = None
-        self.exit_button = None
         self.buttons = [
             ClickButton("Play", 
                 SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - BUTTONS_HEIGHT - 10,

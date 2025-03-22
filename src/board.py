@@ -45,6 +45,11 @@ class Board:
         self.ring_pos = None
         self.remove_ring_phase = False
 
+    def __str__(self):
+        """Return a string representation of the board matrix."""
+        return "\n".join(" ".join(str(cell) for cell in row) for row in self.matrix)
+
+
 
     def calculate_offsets(self):
         board_width = (self.sizeX-1) * 2 * self.radius  # Width based on hex spacing
@@ -212,38 +217,38 @@ class Board:
         for (x,y), (col, row) in self.vertices.items():
             if self.matrix[row][col] == player:
                 for direction in [((0,-2),(0,2)), ((1,1),(-1,-1)), ((1,-1),(-1,1))]:
-                    print(f"MTRXPOS: {col,row} | PLAYER {player} | DIRECTION: {direction}")
+                    #print(f"MTRXPOS: {col,row} | PLAYER {player} | DIRECTION: {direction}")
                     visited.setdefault(direction, set())
                     if (col,row) in visited[direction]:
-                        print("A")
+                      #  print("A")
                         continue
                     else:
-                        print("B")
+                       # print("B")
                         visited[direction].add((col,row))
                         line = []
                         line.append((x,y))
-                        print(f"APENDING TO LINE FIRST: {col,row}")
+                       # print(f"APENDING TO LINE FIRST: {col,row}")
                         for (vectorX, vectorY) in direction:
                             c = col + vectorX
                             r = row + vectorY
-                            print(f"DIRECTION: {vectorX, vectorY}  |||| POS: {c,r}")
+                           # print(f"DIRECTION: {vectorX, vectorY}  |||| POS: {c,r}")
                             while c >= 0 and r>= 0 and c < self.sizeX and r < self.sizeY:
                                 if self.matrix[r][c] != player:
-                                    print("break")
+                                 #   print("break")
                                     break
-                                print(f"APENDING TO LINE: {c,r}")
+                               # print(f"APENDING TO LINE: {c,r}")
                                 visited[direction].add((c,r))
                                 line.append((self.matrix_position_to_pixel(r,c)))
 
 
                                 c += vectorX
                                 r += vectorY
-                        if len(line) >= 2: # TODO: Change to 5
+                        if len(line) >= 5: # TODO: Change to 5
                             lines5.setdefault(direction, []).append(line)
 
-        print(f"LINE5: {lines5}")
-        print(f"VISITED: {visited}")
-        print("-------------------------------")
+       # print(f"LINE5: {lines5}")
+       # print(f"VISITED: {visited}")
+       # print("-------------------------------")
         if len(lines5) > 0:
             self.next_action = BoardAction.REMOVE_5LINE
         return lines5
