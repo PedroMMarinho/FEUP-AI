@@ -121,9 +121,10 @@ class MinMax:
             copy_state = copy.deepcopy(state)
             if state.active_connect5:
                 copy_state.handle_action(seq=move, simul=True)
+                move_val = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
             else:
                 copy_state.handle_action(pos=move, simul=True)
-            move_val = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
+                move_val = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
             if move_val > best_val:
                 best_val = move_val
                 best_move = move
@@ -143,9 +144,10 @@ class MinMax:
                 copy_state = copy.deepcopy(state)
                 if state.active_connect5:
                     copy_state.handle_action(seq=move, simul=True)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
                 else:
                     copy_state.handle_action(pos=move, simul=True)
-                eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
                 max_eval = max(max_eval, eval)
                 alpha = max(alpha, eval)
                 if beta <= alpha:
@@ -157,9 +159,10 @@ class MinMax:
                 copy_state = copy.deepcopy(state)
                 if state.active_connect5:
                     copy_state.handle_action(seq=move, simul=True)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False)
                 else:
                     copy_state.handle_action(pos=move, simul=True)
-                eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, True)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, True)
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
                 if beta <= alpha:

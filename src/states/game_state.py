@@ -60,14 +60,19 @@ class GameState(State):
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MinMax":
                 move = MinMax.best_move(simulated_state,self.bot1_difficulty)
-                self.handle_action(move)
+                if self.active_connect5:
+                    self.handle_action(seq=move)
+                else:
+                    self.handle_action(pos=move)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty)
         elif self.game_mode == GameMode.AI_VS_AI:
             if self.bot2_mode == "MinMax":
                 move = MinMax.best_move(simulated_state,self.bot2_difficulty)
-                self.handle_action(move)
-
+                if self.active_connect5:
+                    self.handle_action(seq=move)
+                else:
+                    self.handle_action(pos=move)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty)
 
@@ -163,7 +168,7 @@ class GameState(State):
     # Starting point game logic - validation and next valid moves
     def handle_action(self, pos=None, seq=None, simul=False):
         if len(self.valid_moves) == 0 and self.active_connect5:
-          #  print("REMOVE MARKERS STATE")
+            print("REMOVE MARKERS STATE")
             self.board.remove_markers(seq)
             self.board.remove_ring_phase = True
             self.active_connect5 = False
