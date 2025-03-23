@@ -1,5 +1,5 @@
 import pygame
-from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT
+from config import SCREEN_HEIGHT, SCREEN_WIDTH, BUTTONS_HEIGHT, BUTTONS_WIDTH, FONT, FONT_TITLE
 from config import LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, WHITE, SELECT_CYAN
 from states.state import State
 from ui import draw_text
@@ -296,56 +296,53 @@ class GameCustomizationMenu(State):
 
     def draw(self):
         screen = self.game.screen
-        font = pygame.font.Font(None, 50)
 
         # Draw the title of the screen
-        draw_text(screen,"Game Customization",font,(60, 100, 140), SCREEN_WIDTH // 2 - font.size("Game Customization")[0] // 2, 50)
+        draw_text(screen,"Game Customization",FONT_TITLE,(60, 100, 140), SCREEN_WIDTH // 2 - FONT_TITLE.size("Game Customization")[0] // 2, 50)
         for button in self.buttons:
             button.draw(screen)
         match self.gameMode:
             case GameMode.PLAYER_VS_AI:
-                font = pygame.font.Font(None, 40)
-                draw_text(screen,"Player Color",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 2 - font.size("Player Color")[0] // 2, 240 + 2 * BUTTONS_HEIGHT)
+                draw_text(screen,"Player Color",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 2 - FONT.size("Player Color")[0] // 2, 240 + 2 * BUTTONS_HEIGHT)
                 
-                draw_text(screen,"Depth",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_minMax),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + font.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,"Depth",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot1_minMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
 
-                draw_text(screen,"Time(s)",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_monteCarlo),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot1_monteCarlo))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + font.size(str(self.bot1_monteCarlo))[1] // 2)
+                draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot1_monteCarlo),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_monteCarlo))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_monteCarlo))[1] // 2)
             
             case GameMode.AI_VS_AI:
-                font = pygame.font.Font(None, 40)
                 #AI 1
-                draw_text(screen,"AI 1",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 2 - font.size("AI 1")[0] // 2, 115 + BUTTONS_HEIGHT)
+                draw_text(screen,"AI 1",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 2 - FONT.size("AI 1")[0] // 2, 115 + BUTTONS_HEIGHT)
                 
-                draw_text(screen,"Depth",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_minMax),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + font.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,"Depth",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot1_minMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
 
-                draw_text(screen,"Time(s)",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_monteCarlo),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot1_monteCarlo))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + font.size(str(self.bot1_monteCarlo))[1] // 2)
+                draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot1_monteCarlo),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_monteCarlo))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_monteCarlo))[1] // 2)
 
                 #AI 2
-                draw_text(screen,"AI 2",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 2 - font.size("AI 2")[0] // 2, 215 + 3 * BUTTONS_HEIGHT)
+                draw_text(screen,"AI 2",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 2 - FONT.size("AI 2")[0] // 2, 215 + 3 * BUTTONS_HEIGHT)
                 
-                draw_text(screen,"Depth",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str("Depth"))[0] // 2, 215 + 4 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot2_minMax),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot2_minMax))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + font.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,"Depth",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 215 + 4 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot2_minMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot2_minMax))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
 
-                draw_text(screen,"Time(s)",font,(60, 100, 140), 
-                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size("Time(s)")[0] // 2, 215 + 4 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot2_monteCarlo),font,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - font.size(str(self.bot2_monteCarlo))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + font.size(str(self.bot1_monteCarlo))[1] // 2)
+                draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
+                        SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 215 + 4 * BUTTONS_HEIGHT)
+                draw_text(screen,str(self.bot2_monteCarlo),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot2_monteCarlo))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_monteCarlo))[1] // 2)
             
               

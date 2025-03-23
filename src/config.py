@@ -30,6 +30,6 @@ BUTTONS_HEIGHT = 60
 BUTTON_FONT_SIZE = 50
 
 pygame.font.init()
-FONT = pygame.font.Font(None, 40)
-SMALL_FONT = pygame.font.Font(None, 30)
-FONT2 = pygame.font.Font(None, 80)
+FONT_TITLE = pygame.font.Font(None, 50) # Title font
+FONT = pygame.font.Font(None, 40) # Button font 
+SMALL_FONT = pygame.font.Font(None, 30) 

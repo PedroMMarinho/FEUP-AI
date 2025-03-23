@@ -3,7 +3,7 @@ import json
 import os
 
 # Function to load the boards from the JSON file
-def load_boards(filename='src/boards.json'):
+def load_boards(filename='src/json/boards.json'):
     if not os.path.exists(filename):
         return {}  # Return an empty dictionary if the file does not exist
     with open(filename, 'r') as file:
@@ -44,7 +44,7 @@ def create_random_board(default_board):
     return new_board
 
 # Function to save the new board with an incremented name
-def save_board_to_json(board, filename='src/boards.json'):
+def save_board_to_json(board, filename='src/json/boards.json'):
     data = load_boards(filename)
     
     # Find the next available board name

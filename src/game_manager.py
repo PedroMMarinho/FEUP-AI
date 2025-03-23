@@ -2,12 +2,15 @@ import pygame
 import config
 from states.main_menu_state import MainMenuState
 from states.game import Game
+from states.game_state import GameState
 from states.instructions_state import InstructionsState
 from states.option_menu_state import OptionMenuState
 from states.game_customization_menu_state import GameCustomizationMenu
 from states.board_customization_menu_state import BoardCustomizationMenu
 from states.board_creation_state import BoardCreationMenu
 from states.game_over import GameOver
+from board import Board
+from json_actions import load_game, save_game, clear_game
 
 class GameManager:
     def __init__(self):
@@ -20,9 +23,8 @@ class GameManager:
         self.states = {
             "menu": MainMenuState(self),
             "instructions": InstructionsState(self),
-            "options" : OptionMenuState(self),
             "initial_board_customization": BoardCustomizationMenu(self),
-            "board_creation_menu": BoardCreationMenu(self)
+            "board_creation_menu": BoardCreationMenu(self),
         }
         self.current_state = self.states["menu"]
 
@@ -35,16 +37,20 @@ class GameManager:
             self.current_state = GameCustomizationMenu(self,*args, **kwargs)
         elif new_state == "game":
             for i in args:
-                print (i)
+                print (f"ARGS:{i}")
             self.current_state = Game(self,*args, **kwargs)
         elif new_state == "game_over":
             for i in args:
-                print (i)
+                print (f"ARGS:{i}")
             self.current_state = GameOver(self,*args, **kwargs)
         elif new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)
         elif new_state == "board_creation_menu":
             self.current_state = BoardCreationMenu(self,*args)
+        elif new_state == "options":
+            self.state_stack.pop()
+            self.state_stack.append(MainMenuState(self))
+            self.current_state = OptionMenuState(self)
         else:
             self.current_state = self.states[new_state]
 
@@ -53,11 +59,27 @@ class GameManager:
         if new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)
 
+
+
     def go_back(self):
         """Return to the previous state if available."""
         if self.state_stack:
             self.current_state = self.state_stack.pop()
+
+    def save_exit(self):
+        save_game("src/json/game_state.json", self.current_state.state.to_dict())
+        self.exit_game()
+
+    def load_game_state(self):
+        loaded_state = load_game("src/json/game_state.json")
+        game_mode = loaded_state['game_mode']
+        self.change_state("game", game_mode)
+        self.current_state.state = GameState.from_dict(loaded_state,Board)
     
+    def clear_game_state(self):
+        clear_game("src/json/game_state.json")
+        self.change_state("options")
+
     def exit_game(self):
         self.running = False
 

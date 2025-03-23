@@ -55,7 +55,7 @@ class BoardCreationMenu(State):
             return
 
         # Load current boards
-        boards = load_boards("src/boards.json")
+        boards = load_boards("src/json/boards.json")
 
         # Check if board name already exists
         if self.input_text in boards and self.input_text != self.original_text:
@@ -69,7 +69,7 @@ class BoardCreationMenu(State):
         else:
             boards[self.input_text] = {"layout": self.board.matrix} #create a new board.
   
-        save_boards("src/boards.json", boards)
+        save_boards("src/json/boards.json", boards)
 
         # Set as selected board and go back
         self.game.selected_board = self.input_text

@@ -5,6 +5,7 @@ from board import BoardPhase
 from mode import GameMode
 import copy
 from ai_algorithms import MonteCarlo, MinMax
+import ast
 
 class GameState(State):
 
@@ -21,7 +22,7 @@ class GameState(State):
         self.player_pieces = player
         # Player needs
         self.valid_ring_moves = []
-        self.line5 = []
+        self.line5 = {}
         self.active_connect5 = False
         self.valid_connect5 = []
         self.selected_sequence = None
@@ -47,6 +48,67 @@ class GameState(State):
                 f"  Bot2 Mode: {self.bot2_mode}, Difficulty: {self.bot2_difficulty},\n"
                 f"  AI Has Moved: {self.ai_has_moved}\n"
                 f")")
+
+
+    def to_dict(self):
+        line5_dict = {str(key): value for key, value in self.line5.items()}
+
+        return {
+            "game_mode": self.game_mode.value,
+            "game_type": self.game_type,
+            "board": self.board.to_dict(),  
+            "player": self.player,
+            "valid_moves": self.valid_moves, 
+            "game_over": self.game_over,
+            "winner": self.winner,
+            "player_pieces": self.player_pieces,
+
+            "line5": line5_dict,
+            "active_connect5": self.active_connect5,
+            "line5_end_turn": self.line5_end_turn,
+            "bot1_mode": self.bot1_mode,
+            "bot1_difficulty": self.bot1_difficulty,
+            "bot2_mode": self.bot2_mode,
+            "bot2_difficulty": self.bot2_difficulty,
+            "ai_has_moved": self.ai_has_moved
+        }
+
+    @classmethod
+    def from_dict(cls, data, board_class):
+        board = board_class.from_dict(data["board"]) 
+        line5 = {
+            # For each key-value pair, process the key and values
+            tuple(
+                tuple(map(int, key.replace("(", "").replace(")", "").split(", ")[i:i+2])) 
+                for i in range(0, len(key.replace("(", "").replace(")", "").split(", ")), 2)
+            ): [
+                [tuple(coord) for coord in group]  # Convert inner lists into tuples
+                for group in value
+            ]
+            for key, value in data["line5"].items()
+        }
+
+        print(f"LINE%: {line5}")
+
+        state = cls(
+            mode=GameMode(data["game_mode"]),
+            board=board,
+            player=data["player_pieces"],
+            bot1_mode=data["bot1_mode"],
+            bot1_difficulty=data["bot1_difficulty"],
+            bot2_mode=data["bot2_mode"],
+            bot2_difficulty=data["bot2_difficulty"]
+        )
+        state.player = data["player"]
+        state.valid_moves = data["valid_moves"]
+        state.game_over = data["game_over"]
+        state.winner = data["winner"]
+        state.line5 = line5
+        state.active_connect5 = data["active_connect5"]
+        state.line5_end_turn = data["line5_end_turn"]
+        state.ai_has_moved = data["ai_has_moved"]
+        return state
+
 
     # Handles AI Play
     def handle_ai(self):
@@ -114,6 +176,7 @@ class GameState(State):
 
                     
         if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME:
+            #print(self.last_hovered_point, self.selected_sequence, self.active_connect5, self.possible_sequences)
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if not self.board.marker_placed and not self.board.remove_ring_phase: # Show ring moves when hover
                 for (valid_x,valid_y) in self.valid_moves:
@@ -139,7 +202,6 @@ class GameState(State):
                                     if self.selected_sequence == None or hovered_point != self.last_hovered_point:
                                         selected_sequence = sequence
                                     self.last_hovered_point = hovered_point
-
                                     #print(f"SEQUECEN : {sequence}")
                                     break  
                             if hovered_point:

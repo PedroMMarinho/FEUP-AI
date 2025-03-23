@@ -54,6 +54,46 @@ class Board:
         """Return a string representation of the board matrix."""
         return "\n".join(" ".join(str(cell) for cell in row) for row in self.matrix)
 
+    def to_dict(self):
+        print(self.matrix)
+        return {
+            "sizeX": self.sizeX,
+            "sizeY": self.sizeY,
+            "radius": self.radius,
+            "x_offset": getattr(self, "x_offset", None),
+            "y_offset": getattr(self, "y_offset", None),
+            "matrix": self.matrix,
+            "phase": self.phase.value,
+            "next_action": self.next_action.value,
+            "num_rings1": self.num_rings1,
+            "num_rings2": self.num_rings2,
+            "num_markers": self.num_markers,
+            "marker_placed": self.marker_placed,
+            "ring_pos": self.ring_pos,
+            "remove_ring_phase": self.remove_ring_phase
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        board = cls(
+            x_offset=data["x_offset"],
+            y_offset=data["y_offset"],
+            radius=data["radius"],
+            matrix=data["matrix"]
+        )
+        board.sizeX = data["sizeX"]
+        board.sizeY = data["sizeY"]
+        board.vertices = board.createBoardVertices()
+        board.phase = BoardPhase(data["phase"])
+        board.next_action = BoardAction(data["next_action"])
+        board.num_rings1 = data["num_rings1"]
+        board.num_rings2 = data["num_rings2"]
+        board.num_markers = data["num_markers"]
+        board.marker_placed = data["marker_placed"]
+        board.ring_pos = tuple(data["ring_pos"]) if data["ring_pos"] is not None else None
+        board.remove_ring_phase = data["remove_ring_phase"]
+        return board
+
 
     def calculate_offsets(self):
         board_width = (self.sizeX-1) * 2 * self.radius  # Width based on hex spacing
@@ -61,7 +101,7 @@ class Board:
 
         # Center the board
         self.x_offset = (SCREEN_WIDTH - board_width) // 2
-        self.y_offset = (SCREEN_HEIGHT - (board_height + board_height/10)) // 2
+        self.y_offset = (SCREEN_HEIGHT - (board_height + board_height/10)) // 2 + 30
 
     def reload_board(self):
         for row in range(self.sizeY):
@@ -109,10 +149,11 @@ class Board:
     
     def createBoardVertices(self):
         vertices = {}
+        matrix = self.createBoard()
         for row in range(self.sizeY):
             for col in range(self.sizeX):
                 x, y = self.matrix_position_to_pixel(row, col)
-                if self.matrix[row][col] != -1:
+                if matrix[row][col] != -1:
                     vertices[(x, y)] = (col, row)
         return vertices
 
@@ -266,7 +307,7 @@ class Board:
                         if len(line) >= n:
                             all_lines.setdefault(direction, []).append(line)
 
-       # print(f"LINE5: {all_lines}")
+        print(f"LINE5: {all_lines}")
        # print(f"VISITED: {visited}")
        # print("-------------------------------")
         if len(all_lines) > 0 and n == 5 :
