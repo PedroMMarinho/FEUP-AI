@@ -156,9 +156,18 @@ class BoardCreationMenu(State):
         self.board.draw(screen)
 
         draw_text(screen, "Board Name", FONT, BLACK, 70, SCREEN_HEIGHT - BUTTONS_HEIGHT * 2 - 90)
+        # Make cursor blink every 500ms
+        cursor_visible = (pygame.time.get_ticks() // 500) % 2 == 0
+
         # Truncate text if it's too long
         text_to_display = self.input_text[-13:]
+
+        # Append blinking cursor if visible
+        if cursor_visible:
+            text_to_display += "|"
+
         draw_input_box(screen, self.input_box, text_to_display)
+
 
         # Hide the error message after 2 seconds (or any desired time)
         if self.error_message and (time.time() - self.error_time) < 2:
