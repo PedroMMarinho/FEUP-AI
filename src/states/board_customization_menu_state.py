@@ -1,6 +1,7 @@
+import pygame
 from states.state import State
 from ui import draw_text
-from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT,RED,BLUE, FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, SMALL_FONT
+from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT,SMALL_FONT, FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, SMALL_FONT
 from button_slider import ButtonSlider
 from button import ClickButton
 from json_actions import  save_boards
@@ -111,13 +112,14 @@ class BoardCustomizationMenu(State):
         # Draw the selected board
         # Draw "Selected Board Preview:" first
         text1 = "Selected Board Preview:"
-        text1_x = SCREEN_WIDTH // 2 - FONT.size(text1)[0] // 2 + 120
-        draw_text(screen, text1, FONT, BLACK, text1_x, 120)
+        font = pygame.font.Font(None, 35)
+        text1_x = SCREEN_WIDTH // 2 - font.size(text1)[0] // 2 + 120
+        draw_text(screen, text1, font, STEEL_BLUE, text1_x, 130 - font.size(text1)[1] // 2)
 
         # Draw the selected board right after text1
         text2 = self.board_slider.selected_board
-        text2_x = text1_x + FONT.size(text1)[0] + 10  # Add some spacing
-        draw_text(screen, text2, FONT, STEEL_BLUE, text2_x, 120)
+        text2_x = text1_x + font.size(text1)[0] + 10  # Add some spacing
+        draw_text(screen, text2, SMALL_FONT, BLACK, text2_x, 132 - SMALL_FONT.size(text2)[1] // 2)
 
         self.board_slider.board.draw(screen)
 

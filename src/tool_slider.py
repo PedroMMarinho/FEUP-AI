@@ -64,7 +64,7 @@ class ToolSlider:
         tool_name = self.get_tool_name(self.get_current_tool())
         text_x_offset = 20  # keep the text centered
         text_y_offset = BUTTONS_HEIGHT + 10  # Adjust text position below tool
-        draw_text(screen, "Current Tool", FONT, BLACK, self.x + text_x_offset - FONT.size("Current Tool")[0] // 2, self.y - (4 * BUTTONS_HEIGHT / 6) - 10)
+        draw_text(screen, "Current Tool", FONT, STEEL_BLUE, self.x + text_x_offset - FONT.size("Current Tool")[0] // 2, self.y - (4 * BUTTONS_HEIGHT / 6) - 10)
         draw_text(screen, tool_name, FONT, STEEL_BLUE, self.x + text_x_offset - FONT.size(tool_name)[0] // 2, self.y + text_y_offset)
 
         # Draw the buttons

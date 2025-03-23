@@ -46,7 +46,7 @@ class Game(State):
                 self.game.change_state("game_over", winner=self.state.winner)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.running = False
+                    self.game.exit_game()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for button in self.buttons:
                         button.click(event)
