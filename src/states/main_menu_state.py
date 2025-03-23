@@ -60,15 +60,11 @@ class MainMenuState(State):
                     action=lambda: self.game.exit_game())
             ]
         
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for button in self.buttons:
-                button.click(event)
 
     def draw(self):
         screen = self.game.screen
         font = pygame.font.Font(None, 60)
         draw_text(screen,"Yinsh",font, STEEL_BLUE, SCREEN_WIDTH // 2 - font.size("Yinsh")[0] // 2, 160)
-        for button in self.buttons:
-            button.draw(screen)
+        # buttons
+        super().draw()
 

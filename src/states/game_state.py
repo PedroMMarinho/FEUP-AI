@@ -1,13 +1,11 @@
 import pygame
 import math
-from states.state import State
 from board import BoardPhase
 from mode import GameMode
 import copy
 from ai_algorithms import MonteCarlo, MinMax
-import ast
 
-class GameState(State):
+class GameState:
 
     def __init__(self, mode, board, player="White", bot1_mode=None, bot1_difficulty=None, bot2_mode=None, bot2_difficulty=None):
         #General

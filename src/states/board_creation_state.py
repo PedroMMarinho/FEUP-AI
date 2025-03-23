@@ -27,7 +27,7 @@ class BoardCreationMenu(State):
         
         self.mouse_down = False # Variable to control if mouse is pressed.
 
-        self.action_buttons = [
+        self.buttons = [
             ClickButton("Save",
                         SCREEN_WIDTH - BUTTONS_WIDTH - 50, SCREEN_HEIGHT - BUTTONS_HEIGHT - 40,  # Bottom left
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
@@ -97,7 +97,7 @@ class BoardCreationMenu(State):
 
 
 
-    def handle_events(self, event):
+    def handle_child_events(self, event):
         """Handles text input, button clicks, and board modifications."""
         if event.type == pygame.KEYDOWN:
             ctrl_held = pygame.key.get_mods() & pygame.KMOD_CTRL  # Check if Ctrl is held
@@ -122,9 +122,6 @@ class BoardCreationMenu(State):
         elif event.type == pygame.MOUSEMOTION:
             if self.mouse_down:
                 self.populate_board_space(event.pos)
-
-        for button in self.action_buttons:
-            button.click(event)
 
         self.tool_slider.handle_event(event)
 
@@ -210,7 +207,7 @@ class BoardCreationMenu(State):
         if self.error_message and (time.time() - self.error_time) < 2:
             draw_text(screen, self.error_message, FONT, (255, 0, 0), SCREEN_WIDTH // 10 - 100, 80)
 
-        for button in self.action_buttons:
-            button.draw(screen)
+        #Buttons
+        super().draw()
 
         self.tool_slider.draw(screen)

@@ -116,7 +116,6 @@ class Board:
                 
     def update_matrix(self, matrix):
         self.matrix = matrix
-        self.vertices = self.createBoardVertices()
 
     def clear_board(self):
             self.matrix = self.createBoard()

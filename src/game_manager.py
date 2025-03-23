@@ -94,21 +94,9 @@ class GameManager:
         
     def run(self):
         while self.running:
-            if isinstance(self.current_state, Game) and self.current_state.state.is_ai_turn():
-                if not self.current_state.state.ai_has_moved:
-                    new_state = self.current_state.state.handle_ai()
-                    if new_state is not None:
-                        self.current_state.state = new_state
-                    else:
-                        self.change_state("game_over", winner=self.current_state.state.winner)
-            else:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.running = False
-                    self.current_state.handle_events(event)
-                
-
             
+            self.current_state.handle_events()
+         
             self.draw_gradient_background((222, 247, 247), (240, 247, 255))
             self.current_state.draw()
             pygame.display.flip()

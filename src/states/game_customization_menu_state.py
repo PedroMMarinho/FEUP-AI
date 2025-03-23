@@ -24,8 +24,6 @@ class GameCustomizationMenu(State):
         self.bot2_monteCarlo = 5
         self.start_piece = "White"
         self.customize_initial_board_button = None
-        self.buttons = []
-
         self.initialize_buttons()
 
 
@@ -289,18 +287,13 @@ class GameCustomizationMenu(State):
                 self.bot2_monteCarlo -=1 
 
 
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for button in self.buttons:
-                button.click(event)            
-
     def draw(self):
         screen = self.game.screen
-
         # Draw the title of the screen
         draw_text(screen,"Game Customization",FONT_TITLE,(60, 100, 140), SCREEN_WIDTH // 2 - FONT_TITLE.size("Game Customization")[0] // 2, 50)
-        for button in self.buttons:
-            button.draw(screen)
+        # Draw buttons
+        super().draw()
+        # Draw texts
         match self.gameMode:
             case GameMode.PLAYER_VS_AI:
                 draw_text(screen,"Player Color",FONT,(60, 100, 140), 

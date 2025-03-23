@@ -33,18 +33,28 @@ class Game(State):
         ]
         
 
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for button in self.buttons:
-                button.click(event)
-        if self.state.game_over:
-            self.game.change_state("game_over", winner=self.state.winner)
-        self.state.handle_events(event)
-
+    def handle_events(self):
+        if self.state.is_ai_turn():
+            if not self.state.ai_has_moved:
+                new_state = self.state.handle_ai()
+                if new_state is not None:
+                    self.state = new_state
+                else:
+                    self.game.change_state("game_over", winner=self.state.winner)
+        else:
+            if self.state.game_over:
+                self.game.change_state("game_over", winner=self.state.winner)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    for button in self.buttons:
+                        button.click(event)
+                self.state.handle_events(event)
 
     def draw(self):
-        for button in self.buttons:
-            button.draw(self.game.screen)
+        #Buttons
+        super().draw()
         #Board
         self.state.board.draw(self.game.screen)
     

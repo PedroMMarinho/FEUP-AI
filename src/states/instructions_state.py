@@ -9,12 +9,6 @@ class InstructionsState(State):
 
     def __init__(self, game):
         super().__init__(game)
-        self.buttons = []
-
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for button in self.buttons:
-                button.click(event) 
 
     def draw(self):
         screen = self.game.screen
@@ -55,6 +49,5 @@ class InstructionsState(State):
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.go_back())
                     )
-
-        for button in self.buttons:
-            button.draw(screen)
+        #buttons
+        super().draw()

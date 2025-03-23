@@ -119,8 +119,13 @@ class MinMax:
         start = time.time()
         for move in state.legal_moves():
             copy_state = copy.deepcopy(state)
+            # Double movement - remove markers, remvove ring
             if state.active_connect5:
                 copy_state.handle_action(seq=move, simul=True)
+                move_val = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
+            # Double movemente - place marker, move ring
+            elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
+                copy_state.handle_action(pos=move, simul=True)
                 move_val = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
             else:
                 copy_state.handle_action(pos=move, simul=True)
@@ -142,8 +147,13 @@ class MinMax:
             max_eval = float('-inf')
             for move in state.legal_moves():
                 copy_state = copy.deepcopy(state)
+                # Double movement - remove markers, remvove ring
                 if state.active_connect5:
                     copy_state.handle_action(seq=move, simul=True)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
+                # Double movemente - place marker, move ring
+                elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
+                    copy_state.handle_action(pos=move, simul=True)
                     eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
                 else:
                     copy_state.handle_action(pos=move, simul=True)
@@ -157,8 +167,13 @@ class MinMax:
             min_eval = float('inf')
             for move in state.legal_moves():
                 copy_state = copy.deepcopy(state)
-                if state.active_connect5:
+                # Double movement - remove markers, remvove ring
+                if state.active_connect5: 
                     copy_state.handle_action(seq=move, simul=True)
+                    eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False)
+                # Double movemente - place marker, move ring
+                elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
+                    copy_state.handle_action(pos=move, simul=True)
                     eval = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False)
                 else:
                     copy_state.handle_action(pos=move, simul=True)

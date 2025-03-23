@@ -24,12 +24,7 @@ class GameOver(State):
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                 action=lambda: self.game.exit_game())
-        ]
-        
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for button in self.buttons:
-                button.click(event)
+        ]    
 
     def draw(self):
         screen = self.game.screen
@@ -43,7 +38,7 @@ class GameOver(State):
             draw_text(screen,"Black Player Wins",fontSmall,(60, 100, 140), SCREEN_WIDTH // 2 - fontSmall.size("Black Player Wins")[0] // 2, 320)
         else:
             draw_text(screen,"Draw",fontSmall,(60, 100, 140), SCREEN_WIDTH // 2 - fontSmall.size("Draw")[0] // 2, 260)
-
-        for button in self.buttons:
-            button.draw(screen)
+            
+        #Buttons
+        super().draw()
 

@@ -1,4 +1,3 @@
-import pygame
 from states.state import State
 from ui import draw_text
 from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT,RED,BLUE, FONT, LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, SMALL_FONT
@@ -15,7 +14,7 @@ class BoardCustomizationMenu(State):
         self.board_button_width = BUTTONS_WIDTH
         self.board_button_height = BUTTONS_HEIGHT
         self.board_slider = ButtonSlider("src/json/boards.json", SCREEN_WIDTH // 4 + 20, SCREEN_HEIGHT // 2 + 20, 10, 10, game.selected_board)
-        self.action_buttons = [
+        self.buttons = [
     ClickButton("Back", 
                 SCREEN_WIDTH // 3 - BUTTONS_WIDTH - 30, SCREEN_HEIGHT - 100,
                 BUTTONS_HEIGHT, 250,
@@ -94,10 +93,8 @@ class BoardCustomizationMenu(State):
             print("Cannot delete the Default board.")
 
         
-    def handle_events(self, event):
+    def handle_child_events(self, event):
         self.board_slider.handle_events(event)  # Handles button clicks & scroll
-        for button in self.action_buttons:
-            button.click(event)
 
     def select_board(self):
         """Sets the selected board and transitions back."""
@@ -124,5 +121,5 @@ class BoardCustomizationMenu(State):
 
         self.board_slider.board.draw(screen)
 
-        for button in self.action_buttons:
-            button.draw(screen)
+        #Buttons
+        super().draw()
