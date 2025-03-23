@@ -55,8 +55,8 @@ class BoardCreationMenu(State):
 
         print(num_rings1, num_rings2, num_markers)
         if num_markers == 51:
-            if not (num_rings1 == num_rings2 or num_rings1 == num_rings2 - 1):
-                return "Rings must be equal or black rings can have one more!"
+            if not (num_rings1 == num_rings2):
+                return "Number of Rings must be equal!"
         
         return None  # No validation errors
 
