@@ -47,6 +47,20 @@ class BoardCreationMenu(State):
         ]
 
 
+    def validate_board_setup(self):
+        """Validates if the board setup follows the game rules."""
+        num_rings1 = self.board.num_rings1  # White rings
+        num_rings2 = self.board.num_rings2  # Black rings
+        num_markers = self.board.num_markers
+
+        print(num_rings1, num_rings2, num_markers)
+        if num_markers == 51:
+            if not (num_rings1 == num_rings2 or num_rings1 == num_rings2 - 1):
+                return "Rings must be equal or black rings can have one more!"
+        
+        return None  # No validation errors
+
+
     def create_board(self):
         """Creates a new board and saves it using the current board's matrix."""
         if not self.input_text.strip():
@@ -54,6 +68,12 @@ class BoardCreationMenu(State):
             self.error_time = time.time()  # Store the time when error occurred
             return
 
+        validation_error = self.validate_board_setup()
+        if validation_error:
+            self.error_message = validation_error
+            self.error_time = time.time()
+            return
+    
         # Load current boards
         boards = load_boards("src/json/boards.json")
 
