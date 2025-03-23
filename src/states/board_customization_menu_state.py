@@ -5,6 +5,7 @@ from config import BLACK, WHITE, BUTTONS_WIDTH, BUTTONS_HEIGHT, SCREEN_WIDTH, SC
 from button_slider import ButtonSlider
 from button import ClickButton
 from json_actions import  save_boards
+import copy
 
 class BoardCustomizationMenu(State):
     def __init__(self, game):
@@ -46,7 +47,8 @@ class BoardCustomizationMenu(State):
                 BUTTONS_HEIGHT, 250,
                 FONT,
                 LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                action=lambda: self.game.change_state("board_creation_menu", self.board_slider.board.matrix, self.board_slider.selected_board
+                action=lambda: self.game.change_state("board_creation_menu", copy.deepcopy(self.board_slider.board.matrix),
+                copy.deepcopy(self.board_slider.selected_board)
                 ))
 ]
 
@@ -60,7 +62,6 @@ class BoardCustomizationMenu(State):
         if self.board_slider.selected_board != "Default":
             # Get list of board names
             board_names = list(self.board_slider.boards.keys())
-
             # Find index of the selected board
             selected_index = board_names.index(self.board_slider.selected_board)
 
@@ -72,14 +73,16 @@ class BoardCustomizationMenu(State):
 
             # Determine the new selected board
             if selected_index > 0:
-                self.board_slider.selected_board = board_names[selected_index - 1]
-                self.game.selected_board = self.board_slider.selected_board  # Select the board above
+                new_selected_board = board_names[selected_index - 1]  # Select the board above
             elif len(self.board_slider.boards) > 0:
-                self.board_slider.selected_board = list(self.board_slider.boards.keys())[0]
-                self.game.selected_board = self.board_slider.selected_board
+                new_selected_board = list(self.board_slider.boards.keys())[0]  # Select the first available board
             else:
-                self.selected_board = "Default"  
-                self.game.selected_board = self.board_slider.selected_board  # Select the board above
+                new_selected_board = "Default"
+
+            self.board_slider.selected_board = new_selected_board
+            self.game.selected_board = new_selected_board
+            self.board_slider.board = self.board_slider.get_board_config()
+
 
             # Recreate buttons with updated board list
             self.board_slider.buttons = self.board_slider.create_buttons()
@@ -120,6 +123,6 @@ class BoardCustomizationMenu(State):
         draw_text(screen, text2, FONT, STEEL_BLUE, text2_x, 115)
 
         self.board_slider.board.draw(screen)
-        # Draw the back button
+
         for button in self.action_buttons:
             button.draw(screen)

@@ -115,6 +115,22 @@ class BoardCreationMenu(State):
                 tool = self.tool_slider.get_current_tool()
                 tool_value = None
 
+                # Enforce board setup rules
+                if tool in [ToolType.BLACK_MARKER, ToolType.WHITE_MARKER]:
+                    if self.board.num_rings1 < 3 or self.board.num_rings2 < 3:
+                        self.error_message = "Need at least 3 rings of each color before adding markers!"
+                        self.error_time = time.time()
+                        return
+                elif tool in [ToolType.BLACK_RING, ToolType.WHITE_RING]:
+                    total_rings1 = self.board.num_rings1 + (1 if tool == ToolType.WHITE_RING else 0)
+                    total_rings2 = self.board.num_rings2 + (1 if tool == ToolType.BLACK_RING else 0)
+
+                    if total_rings1 > 5 or total_rings2 > 5:
+                        self.error_message = "Cannot place more than 5 rings per player!"
+                        self.error_time = time.time()
+                        return
+
+                # Tool application logic
                 if tool == ToolType.BLACK_MARKER:
                     if self.board.num_markers > 0 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
                         tool_value = BoardSpaceType.PLAYER2_MARKER.value
@@ -145,6 +161,7 @@ class BoardCreationMenu(State):
                     self.board.matrix[row][col] = tool_value
                     self.board.update_matrix(self.board.matrix)
                 break
+
 
     def draw(self):
         """Draws the board creation UI."""
