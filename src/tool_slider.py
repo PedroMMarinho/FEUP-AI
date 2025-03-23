@@ -49,9 +49,9 @@ class ToolSlider:
             case ToolType.WHITE_MARKER.value:
                 pygame.draw.circle(screen, (255, 255, 255), (self.x + tool_x_offset, self.y + tool_y_offset), 10)
             case ToolType.BLACK_RING.value:
-                pygame.draw.circle(screen, (0, 0, 0), (self.x + tool_x_offset, self.y + tool_y_offset), 10, 2)
+                pygame.draw.circle(screen, (0, 0, 0), (self.x + tool_x_offset, self.y + tool_y_offset), 10, 4)
             case ToolType.WHITE_RING.value:
-                pygame.draw.circle(screen, (255, 255, 255), (self.x + tool_x_offset, self.y + tool_y_offset), 10, 2)
+                pygame.draw.circle(screen, (255, 255, 255), (self.x + tool_x_offset, self.y + tool_y_offset), 10, 4)
             case ToolType.RUBBER.value:
                 pygame.draw.rect(screen, (255, 255, 255), (self.x + tool_x_offset - 10, self.y + tool_y_offset - 10, 20, 20))
                 pygame.draw.rect(screen, (0, 0, 0), (self.x + tool_x_offset - 10, self.y + tool_y_offset - 10, 20, 20), 2)
