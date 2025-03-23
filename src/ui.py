@@ -12,7 +12,7 @@ def draw_button(screen,text, x, y, width, height, font, color, text_color):
     return rect
 
 def draw_input_box(screen, rect, text):
-    pygame.draw.rect(screen, (200, 200, 200), rect, border_radius=10)
+    pygame.draw.rect(screen, (220, 220, 220), rect, border_radius=10)
     pygame.draw.rect(screen, (100, 100, 100), rect, 2, border_radius=10)
     font_surface = FONT.render(text, True, BLACK)
     screen.blit(font_surface, (rect.x + 5, rect.y + 10))
