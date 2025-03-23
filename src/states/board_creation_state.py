@@ -187,12 +187,12 @@ class BoardCreationMenu(State):
         """Draws the board creation UI."""
         screen = self.game.screen
         title = "Edit Board" if self.mode == "Edit" else "Create New Board"
-        draw_text(screen, title, FONT, BLACK, SCREEN_WIDTH // 2 - FONT.size(title)[0] // 2, 50)
+        draw_text(screen, title, FONT, STEEL_BLUE, SCREEN_WIDTH // 2 - FONT.size(title)[0] // 2, 50)
 
         # Draw the current board
         self.board.draw(screen)
 
-        draw_text(screen, "Board Name", FONT, BLACK, 70, SCREEN_HEIGHT - BUTTONS_HEIGHT * 2 - 90)
+        draw_text(screen, "Board Name", FONT, STEEL_BLUE, 70, SCREEN_HEIGHT - BUTTONS_HEIGHT * 2 - 90)
         # Make cursor blink every 500ms
         cursor_visible = (pygame.time.get_ticks() // 500) % 2 == 0
 

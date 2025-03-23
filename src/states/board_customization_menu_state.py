@@ -107,7 +107,7 @@ class BoardCustomizationMenu(State):
     def draw(self):
         """Draws the board customization menu."""
         screen = self.game.screen
-        draw_text(screen, "Board Customization", FONT, BLACK, SCREEN_WIDTH // 2 - FONT.size("Board Customization")[0] // 2, 50)
+        draw_text(screen, "Board Customization", FONT, STEEL_BLUE, SCREEN_WIDTH // 2 - FONT.size("Board Customization")[0] // 2, 50)
         # Draw the board slider
         self.board_slider.draw(screen)
 
