@@ -354,29 +354,37 @@ class GameState:
     # AI(Minimax) - Heuristics
 
     def evaluate(self):
-        return 0.5*self.inline_2() + self.inline_2() + 1.5*self.inline_3() + 3*self.inline_4()
-
-    # grupos sobresposts??
-    def inline_2(self):
-        dic = self.board.check_x_in_line(2,self.player)
-        list = self.create_possible_choices(dic,2)
-        return len(list)
-
-    def inline_3(self):
-        dic = self.board.check_x_in_line(3,self.player)
-        list = self.create_possible_choices(dic,3)
-        return len(list)
+        return self.x_in_line() + self.can_win(self.player)
     
+    def x_in_line(self):
+        opponent = self.player == 1 + 1
+        score_current_player = 1*self.inlineEqualsN(1, self.player) + 3*self.inlineEqualsN(2, self.player) + 9*self.inlineEqualsN(3, self.player) + 27*self.inlineEqualsN(4, self.player) + 81*self.inlineFiveOrMore(self.player)
+        score_opponent = 1*self.inlineEqualsN(1, opponent) + 3*self.inlineEqualsN(2, opponent) + 9*self.inlineEqualsN(3, opponent) + 27*self.inlineEqualsN(4, opponent) + 81*self.inlineFiveOrMore(opponent)
+        return score_current_player - score_opponent
 
-    def inline_4(self):
-        dic = self.board.check_x_in_line(4,self.player)
-        list = self.create_possible_choices(dic,4)
-        return len(list)
+
+    def inline_equals_n(self, n, player ):
+        score = 0
+        dic = self.board.check_x_in_line(n,player)
+        for key, value_list in dic.items():
+            for line in value_list:
+                score += len(line) == n
+
+        return score
     
-    def inline_5(self):
-        dic = self.board.check_x_in_line(5,self.player)
-        list = self.create_possible_choices(dic,5)
-        return len(list)
+    def inline_five_or_more(self, player):
+        score = 0
+        dic = self.board.check_x_in_line(5,player)
+        for key, valueList in dic.items():
+            for line in valueList:
+                score += len(line) - 4
+
+        return score
+    
+    def can_win(self, player):
+        player_rings = self.board.num_rings1 if player == 1 else self.board.num_rings2
+        return 10000*(self.inline_five_or_more(player) > 0 and player_rings == 3)
+    
     
     #valor pos e neg?
     def dif_markers(self):
