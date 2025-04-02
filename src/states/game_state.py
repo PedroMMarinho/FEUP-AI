@@ -33,6 +33,7 @@ class GameState:
         self.bot2_mode = bot2_mode
         self.bot2_difficulty = bot2_difficulty
         self.ai_has_moved = False
+        self.player_moves = [] # list of all moves done in the game
 
     def __str__(self):
         return (f"GameState(\n"
@@ -289,6 +290,8 @@ class GameState:
                 if self.line5_end_turn:
                     self.change_player()
 
+        self.player_moves.append((x,y))
+
 
     # Utility funcitons
 
@@ -358,8 +361,8 @@ class GameState:
     
     def x_in_line(self):
         opponent = self.player == 1 + 1
-        score_current_player = 1*self.inlineEqualsN(1, self.player) + 3*self.inlineEqualsN(2, self.player) + 9*self.inlineEqualsN(3, self.player) + 27*self.inlineEqualsN(4, self.player) + 81*self.inlineFiveOrMore(self.player)
-        score_opponent = 1*self.inlineEqualsN(1, opponent) + 3*self.inlineEqualsN(2, opponent) + 9*self.inlineEqualsN(3, opponent) + 27*self.inlineEqualsN(4, opponent) + 81*self.inlineFiveOrMore(opponent)
+        score_current_player = 1*self.inline_equals_n(1, self.player) + 3*self.inline_equals_n(2, self.player) + 9*self.inline_equals_n(3, self.player) + 27*self.inline_equals_n(4, self.player) + 81*self.inline_five_or_more(self.player)
+        score_opponent = 1*self.inline_equals_n(1, opponent) + 3*self.inline_equals_n(2, opponent) + 9*self.inline_equals_n(3, opponent) + 27*self.inline_equals_n(4, opponent) + 81*self.inline_five_or_more(opponent)
         return score_current_player - score_opponent
 
 
@@ -389,3 +392,64 @@ class GameState:
     #valor pos e neg?
     def dif_markers(self):
         return self.board.dif_markers(self.player)
+    
+    
+    def next_to_previous_move(self,move): 
+        if len(self.player_moves) == 0: 
+            return False 
+        (boardX,boardY) = move
+        (X,Y) = self.board.vertices[self.player_moves[-1]]
+        
+        vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
+        for v in vectors:
+            (vX,vY) = v
+            altPos = (X + vX,Y + vY)
+            if altPos == (boardX, boardY):
+                return True
+        return False
+        
+    def distance_from_center(self,move): 
+        (centerX,centerY) = (5,9)
+        (X,Y) = move
+        return (X - centerX)**2 + (Y - centerY)**2
+    
+    def eval_prep_move_ai(self,move): 
+        boardMove = self.board.vertices[move]
+        if len(self.player_moves) == 0 and self.on_edge(boardMove) :
+            print("first")
+            return 10000
+
+        if self.count_moves_on_edge(self.player) > 1: 
+            print("center")
+            val = -(self.distance_from_center(boardMove))
+            return val
+        if self.on_edge(boardMove) and self.next_to_previous_move(boardMove):
+            print("next to")
+            return 10000
+        return -10000
+        
+    def on_edge(self, move):
+        vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
+        (moveX, moveY) = move
+        for v in vectors:
+            (vX, vY ) = v
+            if moveX + vX > len(self.board.matrix[0]) -1 or moveX + vX < 0 or moveY + vY > len(self.board.matrix) - 1 or moveY + vY < 0:
+                return True 
+            
+            if self.board.matrix[moveY + vY][moveX + vX] == -1:
+                return True
+        return False    
+    
+    def count_moves_on_edge(self,player): 
+        moves = [ self.player_moves[i] for i in range(0, len(self.player_moves)) if (i + player - 1) % 2 == 0 ]
+
+        counter = 0
+        for m in moves: 
+            if self.on_edge(m): 
+                counter+=1
+        return counter 
+                
+
+
+
+

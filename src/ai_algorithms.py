@@ -127,6 +127,11 @@ class MinMax:
             elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
                 copy_state.handle_action(pos=move, simul=True)
                 move_val = MinMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
+            elif state.board.phase == BoardPhase.PREP: 
+                move_val = state.eval_prep_move_ai(move)
+                print(f"eval : {move_val}")
+                if move_val == best_val and bool(random.getrandbits(1)):
+                    best_move = move
             else:
                 copy_state.handle_action(pos=move, simul=True)
                 move_val = MinMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
@@ -142,7 +147,7 @@ class MinMax:
     def minimax_alpha_beta(state, depth, alpha, beta, maximizing):
         if depth == 0 or state.check_game_over():
             return state.evaluate()
-
+                 
         if maximizing:
             max_eval = float('-inf')
             for move in state.legal_moves():
