@@ -234,6 +234,9 @@ class GameState:
             self.board.remove_ring_phase = True
             self.active_connect5 = False
             self.valid_connect5 = []
+            self.player_moves.append(("remove_line",seq))
+
+            
         else:
             x,y = pos
             if self.is_ai_turn():
@@ -257,16 +260,20 @@ class GameState:
         if self.board.phase == BoardPhase.PREP:
             self.board.perform_move((x,y), (0,0), self.player)
             self.change_player()
+            self.player_moves.append(("place_ring",(x,y)))
+
         elif self.board.phase == BoardPhase.GAME:
             if not self.board.marker_placed and not self.board.remove_ring_phase:
                 self.board.perform_move((x,y), (0,0), self.player)
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
+                self.player_moves.append(("place_marker",(x,y)))
             elif not self.active_connect5 and not self.board.remove_ring_phase:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
                 self.verify_5line()
+                self.player_moves.append(("move_ring",(x,y)))
                 if not self.active_connect5:
                     self.board.marker_placed = False
                     self.board.ring_pos = None
@@ -277,6 +284,7 @@ class GameState:
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
                 self.board.ring_pos = None
+                self.player_moves(("remove_ring",(x,y)))
                 if self.player == 1:
                     self.board.num_rings1 -= 1
                     if self.check_game_over() and not simul:
@@ -290,7 +298,7 @@ class GameState:
                 if self.line5_end_turn:
                     self.change_player()
 
-        self.player_moves.append((x,y))
+
 
 
     # Utility funcitons
@@ -398,7 +406,7 @@ class GameState:
         if len(self.player_moves) == 0: 
             return False 
         (boardX,boardY) = move
-        (X,Y) = self.board.vertices[self.player_moves[-1]]
+        (X,Y) = self.board.vertices[self.player_moves[-1][1]]
         
         vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
         for v in vectors:
@@ -441,7 +449,7 @@ class GameState:
         return False    
     
     def count_moves_on_edge(self,player): 
-        moves = [ self.player_moves[i] for i in range(0, len(self.player_moves)) if (i + player - 1) % 2 == 0 ]
+        moves = [ self.player_moves[i][1] for i in range(0, len(self.player_moves)) if (i + player - 1) % 2 == 0 ]
 
         counter = 0
         for m in moves: 
