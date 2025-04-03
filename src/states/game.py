@@ -89,7 +89,7 @@ class Game(State):
 
     def run_hint_logic(self):
         copy_state = copy.deepcopy(self.state)
-        self.state.hint_move = MiniMax.best_move(copy_state,2,stop_flag=lambda: self.game.stop_ai)
+        self.state.hint_move, _ = MiniMax.best_move(copy_state,2,stop_flag=lambda: self.game.stop_ai)
         if self.game.stop_ai:  
             return
         self.game.ai_thinking = False 
