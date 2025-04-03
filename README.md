@@ -79,7 +79,7 @@ Yinsh features a simple and intuitive design, making it easy for players to navi
   - **Piece Selection** – Integrated within this menu, allowing the player to choose whether to play as white (first to move) or black (second to move). 
 
 
-- **Board Customization Menu** – Create, edit, delete, or select a custom board for gameplay.  
+- **Board Customization Menu** – Create, edit, delete, or select a custom board for gameplay.   
 
 ![board-customization-menu](assets/board-customization-menu.png)
 
@@ -87,4 +87,15 @@ Yinsh features a simple and intuitive design, making it easy for players to navi
 
 ![gif customization](assets/board-customization.gif)
 
-- **In Game Menu** - 
+' **In-Game Menu** is where players interact with the game board and make their moves. It provides essential options to enhance gameplay and flexibility:  
+
+- **Ask for Hints** – Get strategic suggestions to improve your next move. Hints are generated using the **Minimax algorithm** with a depth of **2**.  
+- **Save Game** – Save your progress and resume later.  
+- **Load Game** – Continue a previously saved match.  
+- **Exit Game** – Leave the match and return to the main menu.  
+
+![in-game-menu](assets/in-game-menu.png)  
+
+Here is an example of the gameplay:
+
+
