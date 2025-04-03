@@ -5,6 +5,10 @@ from config import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER1_COLOR, PLAYER2_CO
 # Board class - MatrixSize = 11x19
 
 class BoardSpaceType(Enum): 
+    """
+    An enumeration representing the different types of spaces on a game board.
+    """
+
     INVALID = -1 
     EMPTY = 0
     PLAYER1_MARKER = 1
@@ -13,10 +17,19 @@ class BoardSpaceType(Enum):
     PLAYER2_RING = 4
 
 class BoardPhase(Enum):
+    """
+    An enumeration representing the different phases of a board game.
+    """
+
     PREP = 0
     GAME = 1
 
 class BoardAction(Enum):
+    """
+    BoardAction is an enumeration that represents the possible actions that can be
+    performed on a game board. Each action corresponds to a specific step or move
+    in the game.
+    """
     PLACE_RING = "Place Ring"
     PLACE_MARKER = "Place Marker"
     MOVE_RING = "Move Ring"
@@ -55,7 +68,6 @@ class Board:
         return "\n".join(" ".join(str(cell) for cell in row) for row in self.matrix)
 
     def to_dict(self):
-        print(self.matrix)
         return {
             "sizeX": self.sizeX,
             "sizeY": self.sizeY,

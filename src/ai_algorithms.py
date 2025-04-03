@@ -135,7 +135,6 @@ class MiniMax:
                 move_val = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
             elif state.board.phase == BoardPhase.PREP: 
                 move_val = state.eval_prep_move_ai(move)
-                print(f"eval : {move_val}")
                 if move_val == best_val and random.random() < 0.85:
                     best_move = move
             else:
