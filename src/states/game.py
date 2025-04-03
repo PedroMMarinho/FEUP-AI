@@ -53,8 +53,7 @@ class Game(State):
             if not self.game.ai_thinking:
                 self.start_ai_thread()
         elif self.state.game_over:
-                self.game.change_state("game_over", winner=self.state.winner)
-
+                self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, start_game_time=self.state.start_time, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2  )
         for event in pygame.event.get():
             click = False
             if event.type == pygame.QUIT:   

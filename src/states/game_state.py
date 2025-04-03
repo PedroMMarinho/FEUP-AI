@@ -38,6 +38,9 @@ class GameState:
         self.bot2_mode = bot2_mode
         self.bot2_difficulty = bot2_difficulty
         self.player_moves = [] # list of all moves done in the game
+        self.start_time = pygame.time.get_ticks()
+        self.turn_time = pygame.time.get_ticks()
+
 
     def __str__(self):
         return (f"GameState(\n"
@@ -217,12 +220,12 @@ class GameState:
                         index = self.selected_sequence.index(hovered_point)
         
                         # Select 5 consecutive points
-                        if len(self.selected_sequence) <= 5: # TODO: Change to 5
+                        if len(self.selected_sequence) <= 5:
                             self.valid_connect5 = self.selected_sequence 
                         else:
                             # Try to center around hovered point
-                            start_index = max(0, min(index - 1, len(self.selected_sequence) - 5)) # TODO: Change to 5
-                            self.valid_connect5 = self.selected_sequence[start_index:start_index + 5] # TODO: Change to 5
+                            start_index = max(0, min(index - 1, len(self.selected_sequence) - 5)) 
+                            self.valid_connect5 = self.selected_sequence[start_index:start_index + 5] 
 
                             if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
                                 #print(f"Appending case impar -- Idx {index} | Seq {self.selected_sequence}")
@@ -238,16 +241,17 @@ class GameState:
                 self.board.remove_ring_phase = True
                 self.active_connect5 = False
                 self.valid_connect5 = []
-                self.player_moves.append(("remove_line",seq))
+                for i in range(len(seq)):
+                    seq[i] = self.board.vertices[seq[i]]  
+                self.player_moves.append(("remove_line",seq, (pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                self.turn_time = pygame.time.get_ticks()
             else: 
                 if self.board.num_rings1 == self.board.num_rings2: 
                     self.winner = 0
                 else:
                     self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
                 self.game_over = True
-
-
-            
+                
         else:
             x,y = pos
             if self.is_ai_turn():
@@ -273,7 +277,8 @@ class GameState:
         if self.board.phase == BoardPhase.PREP:
             self.board.perform_move((x,y), (0,0), self.player)
             self.change_player()
-            self.player_moves.append(("place_ring",(x,y)))
+            self.player_moves.append(("place_ring",self.board.vertices[(x,y)], ( pygame.time.get_ticks()  - self.turn_time) / 1000 ))
+            self.turn_time = pygame.time.get_ticks()
 
         elif self.board.phase == BoardPhase.GAME:
             if not self.board.marker_placed and not self.board.remove_ring_phase:
@@ -281,7 +286,8 @@ class GameState:
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
-                self.player_moves.append(("place_marker",(x,y)))
+                self.player_moves.append(("place_marker",self.board.vertices[(x,y)], ( pygame.time.get_ticks() - self.turn_time ) / 1000 ))
+                self.turn_time = pygame.time.get_ticks()
                 if self.board.num_markers < 0: 
                     if self.board.num_rings1 == self.board.num_rings2: 
                         self.winner = 0
@@ -292,7 +298,8 @@ class GameState:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
                 self.verify_5line()
-                self.player_moves.append(("move_ring",(x,y)))
+                self.player_moves.append(("move_ring",self.board.vertices[(x,y)],(pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                self.turn_time = pygame.time.get_ticks()
                 if not self.active_connect5:
                     self.board.marker_placed = False
                     self.board.ring_pos = None
@@ -303,7 +310,8 @@ class GameState:
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
                 self.board.ring_pos = None
-                self.player_moves.append(("remove_ring",(x,y)))
+                self.player_moves.append(("remove_ring",self.board.vertices[(x,y)],( pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                self.turn_time = pygame.time.get_ticks()
                 if self.player == 1:
                     self.board.num_rings1 -= 1
                     if self.check_game_over() and not simul:
@@ -492,7 +500,7 @@ class GameState:
         if len(self.player_moves) == 0: 
             return False 
         (boardX,boardY) = move
-        (X,Y) = self.board.vertices[self.player_moves[-1][1]]
+        (X,Y) = self.player_moves[-1][1]
         
         vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
         for v in vectors:
@@ -574,6 +582,7 @@ class GameState:
             player_rings = self.board.num_rings2
             opponent_rings = self.board.num_rings1
         return (opponent_rings*100) - (player_rings*100)
+    
                 
 
 
