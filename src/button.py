@@ -18,6 +18,7 @@ class ClickButton:
         self.font = font
         self.action = action
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.clicked = False
         # Select and group logic
         self.selected = selected
         self.group = group    
@@ -80,6 +81,7 @@ class ClickButton:
 
     def click(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos) and self.action:
+            self.clicked = True
             if not (self.group is not None and self.selected):
                 self.action()
                 self.change_to_alt()

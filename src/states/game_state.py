@@ -3,7 +3,7 @@ import math
 from board import BoardPhase
 from mode import GameMode
 import copy
-from ai_algorithms import MonteCarlo, MinMax
+from ai_algorithms import MonteCarlo, MiniMax
 
 class GameState:
 
@@ -27,12 +27,12 @@ class GameState:
         self.possible_sequences = []  
         self.last_hovered_point = (-1,-1)
         self.line5_end_turn = False
+        self.hint_move = None
         #AI needs 
         self.bot1_mode = bot1_mode
         self.bot1_difficulty = bot1_difficulty
         self.bot2_mode = bot2_mode
         self.bot2_difficulty = bot2_difficulty
-        self.ai_has_moved = False
 
     def __str__(self):
         return (f"GameState(\n"
@@ -44,7 +44,6 @@ class GameState:
                 f"  Valid Moves: {len(self.valid_moves)},\n"
                 f"  Bot1 Mode: {self.bot1_mode}, Difficulty: {self.bot1_difficulty},\n"
                 f"  Bot2 Mode: {self.bot2_mode}, Difficulty: {self.bot2_difficulty},\n"
-                f"  AI Has Moved: {self.ai_has_moved}\n"
                 f")")
 
 
@@ -68,7 +67,6 @@ class GameState:
             "bot1_difficulty": self.bot1_difficulty,
             "bot2_mode": self.bot2_mode,
             "bot2_difficulty": self.bot2_difficulty,
-            "ai_has_moved": self.ai_has_moved
         }
 
     @classmethod
@@ -104,39 +102,36 @@ class GameState:
         state.line5 = line5
         state.active_connect5 = data["active_connect5"]
         state.line5_end_turn = data["line5_end_turn"]
-        state.ai_has_moved = data["ai_has_moved"]
         return state
 
 
     # Handles AI Play
-    def handle_ai(self):
-        self.ai_has_moved = True
-
-        if self.game_over:
-            self.ai_has_moved = False
+    def handle_ai(self, stop_flag=lambda: False):
+        if self.game_over or stop_flag():
             return None
 
         simulated_state = copy.deepcopy(self)
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MinMax":
-                move = MinMax.best_move(simulated_state,self.bot1_difficulty)
-                if self.active_connect5:
-                    self.handle_action(seq=move)
-                else:
-                    self.handle_action(pos=move)
+                move = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                if not stop_flag():
+                    if self.active_connect5:
+                        self.handle_action(seq=move)
+                    else:
+                        self.handle_action(pos=move)
             else:
-                self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty)
+                self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
         elif self.game_mode == GameMode.AI_VS_AI:
             if self.bot2_mode == "MinMax":
-                move = MinMax.best_move(simulated_state,self.bot2_difficulty)
-                if self.active_connect5:
-                    self.handle_action(seq=move)
-                else:
-                    self.handle_action(pos=move)
+                move = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                if not stop_flag():
+                    if self.active_connect5:
+                        self.handle_action(seq=move)
+                    else:
+                        self.handle_action(pos=move)
             else:
-                self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty)
+                self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
 
-        self.ai_has_moved = False
         return self
     
 
@@ -145,6 +140,7 @@ class GameState:
         self.valid_ring_moves = []
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                self.hint_move = None
                 if self.active_connect5:
                     self.handle_action(seq=self.valid_connect5)
                 else:

@@ -18,6 +18,9 @@ class GameManager:
         self.screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         pygame.display.set_caption("Yinsh")
         self.running = True
+        self.ai_thread = None
+        self.ai_thinking = False
+        self.stop_ai = False
         self.selected_board = "Default"
         self.state_stack = []  # Stack to track state history
         self.states = {
@@ -29,7 +32,7 @@ class GameManager:
         self.current_state = self.states["menu"]
 
     def change_state(self, new_state, *args, **kwargs):
-        
+        self.stop_ai = True
         if self.current_state:
             self.state_stack.append(self.current_state)  # Save the current state
         if new_state == "customization":
@@ -37,6 +40,9 @@ class GameManager:
         elif new_state == "game":
             for i in args:
                 print (f"ARGS:{i}")
+            self.ai_thread = None
+            self.ai_thinking = False
+            self.stop_ai = False
             self.current_state = Game(self,*args, **kwargs)
         elif new_state == "game_over":
             for i in args:
@@ -58,8 +64,6 @@ class GameManager:
         if new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)
 
-
-
     def go_back(self):
         """Return to the previous state if available."""
         if self.state_stack:
@@ -80,6 +84,9 @@ class GameManager:
         self.change_state("options")
 
     def exit_game(self):
+        self.stop_ai = True
+        if self.ai_thread and self.ai_thread.is_alive():
+            self.ai_thread.join() 
         self.running = False
 
     def draw_gradient_background(self, color_top, color_bottom):
