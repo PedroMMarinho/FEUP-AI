@@ -33,6 +33,7 @@ class GameState:
         self.bot1_difficulty = bot1_difficulty
         self.bot2_mode = bot2_mode
         self.bot2_difficulty = bot2_difficulty
+        self.player_moves = [] # list of all moves done in the game
 
     def __str__(self):
         return (f"GameState(\n"
@@ -229,6 +230,9 @@ class GameState:
             self.board.remove_ring_phase = True
             self.active_connect5 = False
             self.valid_connect5 = []
+            self.player_moves.append(("remove_line",seq))
+
+            
         else:
             x,y = pos
             if self.is_ai_turn():
@@ -252,16 +256,20 @@ class GameState:
         if self.board.phase == BoardPhase.PREP:
             self.board.perform_move((x,y), (0,0), self.player)
             self.change_player()
+            self.player_moves.append(("place_ring",(x,y)))
+
         elif self.board.phase == BoardPhase.GAME:
             if not self.board.marker_placed and not self.board.remove_ring_phase:
                 self.board.perform_move((x,y), (0,0), self.player)
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
+                self.player_moves.append(("place_marker",(x,y)))
             elif not self.active_connect5 and not self.board.remove_ring_phase:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
                 self.verify_5line()
+                self.player_moves.append(("move_ring",(x,y)))
                 if not self.active_connect5:
                     self.board.marker_placed = False
                     self.board.ring_pos = None
@@ -272,6 +280,7 @@ class GameState:
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
                 self.board.ring_pos = None
+                self.player_moves(("remove_ring",(x,y)))
                 if self.player == 1:
                     self.board.num_rings1 -= 1
                     if self.check_game_over() and not simul:
@@ -284,6 +293,8 @@ class GameState:
                         self.winner = 2
                 if self.line5_end_turn:
                     self.change_player()
+
+
 
 
     # Utility funcitons
@@ -350,30 +361,99 @@ class GameState:
     # AI(Minimax) - Heuristics
 
     def evaluate(self):
-        return 0.5*self.inline_2() + self.inline_2() + 1.5*self.inline_3() + 3*self.inline_4()
-
-    # grupos sobresposts??
-    def inline_2(self):
-        dic = self.board.check_x_in_line(2,self.player)
-        list = self.create_possible_choices(dic,2)
-        return len(list)
-
-    def inline_3(self):
-        dic = self.board.check_x_in_line(3,self.player)
-        list = self.create_possible_choices(dic,3)
-        return len(list)
+        return self.x_in_line() + self.can_win(self.player)
     
+    def x_in_line(self):
+        opponent = self.player == 1 + 1
+        score_current_player = 1*self.inline_equals_n(1, self.player) + 3*self.inline_equals_n(2, self.player) + 9*self.inline_equals_n(3, self.player) + 27*self.inline_equals_n(4, self.player) + 81*self.inline_five_or_more(self.player)
+        score_opponent = 1*self.inline_equals_n(1, opponent) + 3*self.inline_equals_n(2, opponent) + 9*self.inline_equals_n(3, opponent) + 27*self.inline_equals_n(4, opponent) + 81*self.inline_five_or_more(opponent)
+        return score_current_player - score_opponent
 
-    def inline_4(self):
-        dic = self.board.check_x_in_line(4,self.player)
-        list = self.create_possible_choices(dic,4)
-        return len(list)
+
+    def inline_equals_n(self, n, player ):
+        score = 0
+        dic = self.board.check_x_in_line(n,player)
+        for key, value_list in dic.items():
+            for line in value_list:
+                score += len(line) == n
+
+        return score
     
-    def inline_5(self):
-        dic = self.board.check_x_in_line(5,self.player)
-        list = self.create_possible_choices(dic,5)
-        return len(list)
+    def inline_five_or_more(self, player):
+        score = 0
+        dic = self.board.check_x_in_line(5,player)
+        for key, valueList in dic.items():
+            for line in valueList:
+                score += len(line) - 4
+
+        return score
+    
+    def can_win(self, player):
+        player_rings = self.board.num_rings1 if player == 1 else self.board.num_rings2
+        return 10000*(self.inline_five_or_more(player) > 0 and player_rings == 3)
+    
     
     #valor pos e neg?
     def dif_markers(self):
         return self.board.dif_markers(self.player)
+    
+    
+    def next_to_previous_move(self,move): 
+        if len(self.player_moves) == 0: 
+            return False 
+        (boardX,boardY) = move
+        (X,Y) = self.board.vertices[self.player_moves[-1][1]]
+        
+        vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
+        for v in vectors:
+            (vX,vY) = v
+            altPos = (X + vX,Y + vY)
+            if altPos == (boardX, boardY):
+                return True
+        return False
+        
+    def distance_from_center(self,move): 
+        (centerX,centerY) = (5,9)
+        (X,Y) = move
+        return (X - centerX)**2 + (Y - centerY)**2
+    
+    def eval_prep_move_ai(self,move): 
+        boardMove = self.board.vertices[move]
+        if len(self.player_moves) == 0 and self.on_edge(boardMove) :
+            print("first")
+            return 10000
+
+        if self.count_moves_on_edge(self.player) > 1: 
+            print("center")
+            val = -(self.distance_from_center(boardMove))
+            return val
+        if self.on_edge(boardMove) and self.next_to_previous_move(boardMove):
+            print("next to")
+            return 10000
+        return -10000
+        
+    def on_edge(self, move):
+        vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
+        (moveX, moveY) = move
+        for v in vectors:
+            (vX, vY ) = v
+            if moveX + vX > len(self.board.matrix[0]) -1 or moveX + vX < 0 or moveY + vY > len(self.board.matrix) - 1 or moveY + vY < 0:
+                return True 
+            
+            if self.board.matrix[moveY + vY][moveX + vX] == -1:
+                return True
+        return False    
+    
+    def count_moves_on_edge(self,player): 
+        moves = [ self.player_moves[i][1] for i in range(0, len(self.player_moves)) if (i + player - 1) % 2 == 0 ]
+
+        counter = 0
+        for m in moves: 
+            if self.on_edge(m): 
+                counter+=1
+        return counter 
+                
+
+
+
+
