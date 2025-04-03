@@ -20,7 +20,7 @@ class BoardAction(Enum):
     PLACE_RING = "Place Ring"
     PLACE_MARKER = "Place Marker"
     MOVE_RING = "Move Ring"
-    REMOVE_5LINE = "Remove a 5 line group"
+    REMOVE_5LINE = "Remove 5 Line"
     REMOVE_RING = "Remove Ring"
 
 class Board:
