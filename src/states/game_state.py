@@ -231,12 +231,20 @@ class GameState:
     # Starting point game logic - validation and next valid moves
     def handle_action(self, pos=None, seq=None, simul=False):
         """Handles a player's action during the game."""
-        if len(self.valid_moves) == 0 and self.active_connect5:
-            self.board.remove_markers(seq)
-            self.board.remove_ring_phase = True
-            self.active_connect5 = False
-            self.valid_connect5 = []
-            self.player_moves.append(("remove_line",seq))
+        if len(self.valid_moves) == 0 :
+            if self.active_connect5:
+                self.board.remove_markers(seq)
+                self.board.remove_ring_phase = True
+                self.active_connect5 = False
+                self.valid_connect5 = []
+                self.player_moves.append(("remove_line",seq))
+            else: 
+                if self.board.num_rings1 == self.board.num_rings2: 
+                    self.winner = 0
+                else:
+                    self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
+                self.game_over = True
+
 
             
         else:
@@ -253,6 +261,7 @@ class GameState:
             self.valid_moves = []
         else:
             self.valid_moves = self.board.valid_moves(self.player)
+                
 
         return self
 
@@ -272,6 +281,12 @@ class GameState:
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
                 self.player_moves.append(("place_marker",(x,y)))
+                if self.board.num_markers < 0: 
+                    if self.board.num_rings1 == self.board.num_rings2: 
+                        self.winner = 0
+                    else:
+                        self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
+                    self.game_over = True
             elif not self.active_connect5 and not self.board.remove_ring_phase:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
@@ -356,6 +371,8 @@ class GameState:
         if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2 ):
             return True
         if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 ):
+            return True
+        if self.board.num_markers == 0: 
             return True
         return False
     
