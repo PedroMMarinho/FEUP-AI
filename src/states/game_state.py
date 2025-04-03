@@ -6,6 +6,10 @@ import copy
 from ai_algorithms import MonteCarlo, MiniMax
 
 class GameState:
+    """
+    GameState class represents the state of the game, encapsulating all the necessary information
+    to manage the game's logic, including player actions, AI behavior, and game rules.
+    """
 
     def __init__(self, mode, board, player="White", bot1_mode=None, bot1_difficulty=None, bot2_mode=None, bot2_difficulty=None):
         #General
@@ -108,6 +112,7 @@ class GameState:
 
     # Handles AI Play
     def handle_ai(self, stop_flag=lambda: False):
+        """Executes the AI's turn based on the game mode and bot configurations.""" 
         if self.game_over or stop_flag():
             return None
 
@@ -138,6 +143,7 @@ class GameState:
 
     # Handles Player Play
     def handle_events(self,event):
+        """Handles various game events such as mouse clicks and mouse movements."""
         self.valid_ring_moves = []
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -224,8 +230,8 @@ class GameState:
 
     # Starting point game logic - validation and next valid moves
     def handle_action(self, pos=None, seq=None, simul=False):
+        """Handles a player's action during the game."""
         if len(self.valid_moves) == 0 and self.active_connect5:
-            print("REMOVE MARKERS STATE")
             self.board.remove_markers(seq)
             self.board.remove_ring_phase = True
             self.active_connect5 = False
@@ -253,6 +259,7 @@ class GameState:
 
     # Game logic - Does actual move
     def handle_move(self,x,y, simul=False):
+        """Handles a player's move in the game based on the current phase and state of the board."""
         if self.board.phase == BoardPhase.PREP:
             self.board.perform_move((x,y), (0,0), self.player)
             self.change_player()
@@ -301,16 +308,37 @@ class GameState:
 
     # Check if mouse pos is within hitbox
     def is_within_hitbox(self, mouse_x, mouse_y, piece_x, piece_y):
+        """
+        Determines whether a given point (mouse_x, mouse_y) is within the hitbox
+        of a piece located at (piece_x, piece_y).
+        The hitbox is defined as a circular area with a radius of 12 units.
+        """
+
         distance = math.sqrt((mouse_x - piece_x) ** 2 + (mouse_y - piece_y) ** 2)
         return distance <= 12
 
     # Verify if 5 markers in line
     def verify_5line(self):
+        """
+        Verifies if there is a line of 5 consecutive pieces for the current player on the board.
+        This method checks the board to determine if the current player has achieved a line
+        of exactly 5 consecutive pieces. If such a line exists, it updates the `line5` attribute
+        with the positions of the pieces in the line and sets the `active_connect5` attribute
+        to True. Otherwise, `active_connect5` is set to False.
+        """
+
         self.line5 = self.board.check_x_in_line(5,self.player)
         self.active_connect5 = len(self.line5) > 0               
 
     # Changes player turn
     def change_player(self):
+        """
+        Switches the current player to the other player and resets the end-of-turn state.
+        This method toggles the `player` attribute between player 1 and player 2.
+        It also resets the `line5_end_turn` attribute to `False` and calls the 
+        `verify_5line` method to perform any necessary checks related to the game state.
+        """
+
         if self.player == 1:
             self.player = 2
         else:
@@ -321,6 +349,10 @@ class GameState:
 
     # Checks if is game over state 
     def check_game_over(self):
+        """
+        Checks if the game is over based on the current board state and game type.
+        """
+
         if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2 ):
             return True
         if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 ):
@@ -330,10 +362,17 @@ class GameState:
 
     # Checks if is ai turn
     def is_ai_turn(self):
+        """
+        Determines if it is the AI's turn to play.
+        """
+
         return (self.game_mode == GameMode.PLAYER_VS_AI and ((self.player == 1 and self.player_pieces == "Black") or (self.player == 2 and self.player_pieces == "White"))) or self.game_mode == GameMode.AI_VS_AI
 
     # AI - When n in line creates a list with valid selections
     def create_possible_choices(self, dic, n):
+        """
+        Generates all possible groups of length `n` from the sequences in the given dictionary.
+        """
         possible_choices = []
         for sequences in dic.values():
             for sequence in sequences:
@@ -344,6 +383,10 @@ class GameState:
 
     # AI - Valid moves
     def legal_moves(self):
+        """
+        Determines the legal moves available in the current game state for the AI.
+        """
+
         if self.active_connect5:
             return self.create_possible_choices(self.line5, 5)
         else:
@@ -351,6 +394,10 @@ class GameState:
 
     # AI(MonteCarlo) - Used in simulation phase of montecarlo, checks if player wins or lose the game 
     def get_result(self):
+        """
+        Determines the result of the game based on the current state.
+        """
+        
         if self.board.phase == BoardPhase.GAME and self.player == 1 and (self.game_type == "Blitz" and self.board.num_rings1 == 4 or self.game_type == "Normal" and self.board.num_rings1 == 2) :
             return 1
         elif self.board.phase == BoardPhase.GAME and self.player == 2 and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2) :
@@ -361,9 +408,22 @@ class GameState:
     # AI(Minimax) - Heuristics
 
     def evaluate(self):
+        """
+        Evaluates the current game state by calculating a score based on various factors.
+        """
         return self.x_in_line() + self.can_win(self.player) + self.n_rings(self.player)
     
     def x_in_line(self):
+        """
+        Calculates the score difference between the current player and the opponent
+        based on the number of consecutive pieces in a line.
+        The scoring system assigns weights to the number of consecutive pieces:
+        - 1 point for a single piece in a line.
+        - 3 points for two consecutive pieces in a line.
+        - 9 points for three consecutive pieces in a line.
+        - 27 points for four consecutive pieces in a line.
+        - 81 points for five or more consecutive pieces in a line.
+        """
         opponent = (self.player == 1) + 1
         score_current_player = 1*self.inline_equals_n(1, self.player) + 3*self.inline_equals_n(2, self.player) + 9*self.inline_equals_n(3, self.player) + 27*self.inline_equals_n(4, self.player) + 81*self.inline_five_or_more(self.player)
         score_opponent = 1*self.inline_equals_n(1, opponent) + 3*self.inline_equals_n(2, opponent) + 9*self.inline_equals_n(3, opponent) + 27*self.inline_equals_n(4, opponent) + 81*self.inline_five_or_more(opponent)
@@ -371,6 +431,10 @@ class GameState:
 
 
     def inline_equals_n(self, n, player ):
+        """
+        Calculates the number of lines of length `n` occupied by the specified player.
+        """
+        
         score = 0
         dic = self.board.check_x_in_line(n,player)
         for key, value_list in dic.items():
@@ -379,6 +443,10 @@ class GameState:
         return score
     
     def inline_five_or_more(self, player):
+        """
+        Calculates the number of inline sequences of five or more pieces on the board.
+        """
+
         score = 0
         dic = self.board.check_x_in_line(5,player)
         for key, valueList in dic.items():
@@ -388,16 +456,21 @@ class GameState:
         return score
     
     def can_win(self, player):
+        """
+        Determines if the specified player can win the game.
+        """
+
         player_rings = self.board.num_rings1 if player == 1 else self.board.num_rings2
         return 10000*(self.inline_five_or_more(player) > 0 and player_rings == 3)
     
     
-    #valor pos e neg?
-    def dif_markers(self):
-        return self.board.dif_markers(self.player)
     
     
     def next_to_previous_move(self,move): 
+        """
+        Determines if the given move is adjacent to the previous move made by the player.
+        """
+
         if len(self.player_moves) == 0: 
             return False 
         (boardX,boardY) = move
@@ -412,11 +485,19 @@ class GameState:
         return False
         
     def distance_from_center(self,move): 
+        """
+        Calculate the squared distance of a given move from the center point.
+        """
+
         (centerX,centerY) = (5,9)
         (X,Y) = move
         return (X - centerX)**2 + (Y - centerY)**2
     
     def eval_prep_move_ai(self,move): 
+        """
+        Evaluates the preparation move for the AI player based on the current game state.
+        """
+
         boardMove = self.board.vertices[move]
         if len(self.player_moves) == 0 and self.on_edge(boardMove) :
             print("first")
@@ -432,6 +513,10 @@ class GameState:
         return -(self.distance_from_center(boardMove))
         
     def on_edge(self, move):
+        """
+        Determines if a given move is on the edge of the board.
+        """
+
         vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
         (moveX, moveY) = move
         for v in vectors:
@@ -444,6 +529,10 @@ class GameState:
         return False    
     
     def count_moves_on_edge(self,player): 
+        """
+        Counts the number of moves made by the specified player that are on the edge of the game board.
+        """
+
         moves = [ self.player_moves[i][1] for i in range(0, len(self.player_moves)) if (i + player - 1) % 2 == 0 ]
 
         counter = 0
@@ -453,6 +542,13 @@ class GameState:
         return counter 
     
     def n_rings(self,player): 
+        """
+        Calculates the heuristic value based on the number of rings for the given player
+        and their opponent.
+        The heuristic is computed as the difference between the opponent's rings and
+        the player's rings, each weighted by a factor of 100.
+        """
+
         if player == 1: 
             player_rings = self.board.num_rings1
             opponent_rings = self.board.num_rings2
