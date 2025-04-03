@@ -30,7 +30,7 @@ class GameOver(State):
         screen = self.game.screen
         font = pygame.font.Font(None, 60)
         fontSmall = pygame.font.Font(None, 50)
-        draw_text(screen,"GameOver",font,(60, 100, 140), SCREEN_WIDTH // 2 - font.size("GameOver")[0] // 2, 160)
+        draw_text(screen,"Game Over",font,(60, 100, 140), SCREEN_WIDTH // 2 - font.size("Game Over")[0] // 2, 160)
 
         if self.winner == 1:
             draw_text(screen,"White Player Wins",fontSmall,(60, 100, 140), SCREEN_WIDTH // 2 - fontSmall.size("White Player Wins")[0] // 2, 320)

@@ -284,7 +284,7 @@ class GameState:
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
                 self.board.ring_pos = None
-                self.player_moves(("remove_ring",(x,y)))
+                self.player_moves.append(("remove_ring",(x,y)))
                 if self.player == 1:
                     self.board.num_rings1 -= 1
                     if self.check_game_over() and not simul:
@@ -365,22 +365,29 @@ class GameState:
     # AI(Minimax) - Heuristics
 
     def evaluate(self):
-        return self.x_in_line() + self.can_win(self.player)
+        return self.x_in_line() + self.can_win(self.player) + self.n_rings(self.player)
     
     def x_in_line(self):
-        opponent = self.player == 1 + 1
+        print(f"Player: {self.player}")
+        opponent = (self.player == 1) + 1
+        print(f"openent: {opponent}")
         score_current_player = 1*self.inline_equals_n(1, self.player) + 3*self.inline_equals_n(2, self.player) + 9*self.inline_equals_n(3, self.player) + 27*self.inline_equals_n(4, self.player) + 81*self.inline_five_or_more(self.player)
+        print(f"current_player: {score_current_player}")
         score_opponent = 1*self.inline_equals_n(1, opponent) + 3*self.inline_equals_n(2, opponent) + 9*self.inline_equals_n(3, opponent) + 27*self.inline_equals_n(4, opponent) + 81*self.inline_five_or_more(opponent)
+        print(f"score_opponent: {score_opponent}")
+        print(f"total: {score_current_player - score_opponent}")
         return score_current_player - score_opponent
 
 
     def inline_equals_n(self, n, player ):
         score = 0
+        print("calc")
+        print(f"player: {player}")
         dic = self.board.check_x_in_line(n,player)
         for key, value_list in dic.items():
             for line in value_list:
                 score += len(line) == n
-
+        print(f"score: {score}")
         return score
     
     def inline_five_or_more(self, player):
@@ -434,7 +441,7 @@ class GameState:
         if self.on_edge(boardMove) and self.next_to_previous_move(boardMove):
             print("next to")
             return 10000
-        return -10000
+        return -(self.distance_from_center(boardMove))
         
     def on_edge(self, move):
         vectors = [(0,2),(0,-2),(1,1),(-1,-1),(1,-1),(-1,1)]
@@ -456,6 +463,15 @@ class GameState:
             if self.on_edge(m): 
                 counter+=1
         return counter 
+    
+    def n_rings(self,player): 
+        if player == 1: 
+            player_rings = self.board.num_rings1
+            opponent_rings = self.board.num_rings2
+        else: 
+            player_rings = self.board.num_rings2
+            opponent_rings = self.board.num_rings1
+        return (opponent_rings*100) - (player_rings*100)
                 
 
 

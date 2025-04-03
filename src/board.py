@@ -306,7 +306,7 @@ class Board:
                         if len(line) >= n:
                             all_lines.setdefault(direction, []).append(line)
 
-        print(f"LINE5: {all_lines}")
+        #print(f"LINE5: {all_lines}")
        # print(f"VISITED: {visited}")
        # print("-------------------------------")
         if len(all_lines) > 0 and n == 5 :
