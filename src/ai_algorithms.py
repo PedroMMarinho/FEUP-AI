@@ -128,33 +128,38 @@ class MiniMax:
             # Double movement - remove markers, remvove ring
             if state.active_connect5:
                 copy_state.handle_action(seq=move, simul=True)
-                move_val = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
+                (move_val,move_2) = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, double_move=True)
             # Double movemente - place marker, move ring
             elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
                 copy_state.handle_action(pos=move, simul=True)
-                move_val = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True)
+                (move_val,move_2) = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, double_move=True)
             elif state.board.phase == BoardPhase.PREP: 
                 move_val = state.eval_prep_move_ai(move)
                 if move_val == best_val and random.random() < 0.85:
                     best_move = move
+                move_2 = None
             else:
                 copy_state.handle_action(pos=move, simul=True)
-                move_val = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
+                (move_val,move_2) = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False)
             if move_val > best_val:
                 best_val = move_val
                 best_move = move
+                best_move_2 = move_2
             alpha = max(alpha, best_val)
         end = time.time()
         while end - start < 1: # Min 1 sec play
             end = time.time()
-        return best_move
+        if best_move_2:
+            return best_move, best_move_2
+        else:
+            return best_move, None
 
 
-    def minimax_alpha_beta(state, depth, alpha, beta, maximizing, prev_eval=None, streak=0):
+    def minimax_alpha_beta(state, depth, alpha, beta, maximizing, double_move=False, prev_eval=None, streak=0):
         eval = state.evaluate()  # Evaluate at every step
 
         if depth == 0 or state.check_game_over():
-            return eval  # Terminal node, return eval
+            return eval, None  # Terminal node, return eval
 
         if maximizing:
             max_eval = float('-inf')
@@ -163,13 +168,13 @@ class MiniMax:
 
                 if state.active_connect5:
                     copy_state.handle_action(seq=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, eval, streak)
                 elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
                     copy_state.handle_action(pos=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, True, eval, streak)
                 else:
                     copy_state.handle_action(pos=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, False, eval, streak)
 
                 # Stability check
                 if prev_eval is not None:
@@ -181,10 +186,15 @@ class MiniMax:
                         streak = 0
 
                 max_eval = max(max_eval, next_eval)
+                if double_move and max_eval == next_eval:
+                    best_move = move
                 alpha = max(alpha, next_eval)
                 if beta <= alpha:
-                    break  
-            return max_eval
+                    break
+            if double_move:
+                return max_eval, best_move
+            else:  
+                return max_eval, None
         else:
             min_eval = float('inf')
             for move in state.legal_moves():
@@ -192,13 +202,13 @@ class MiniMax:
 
                 if state.active_connect5:
                     copy_state.handle_action(seq=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False, eval, streak)
                 elif state.board.phase == BoardPhase.GAME and not state.board.marker_placed and not state.board.remove_ring_phase:
                     copy_state.handle_action(pos=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth, alpha, beta, False, eval, streak)
                 else:
                     copy_state.handle_action(pos=move, simul=True)
-                    next_eval = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, True, eval, streak)
+                    next_eval,_ = MiniMax.minimax_alpha_beta(copy_state, depth - 1, alpha, beta, True, eval, streak)
 
                 # Instability penalty
                 if prev_eval is not None:
@@ -210,7 +220,12 @@ class MiniMax:
                         streak = 0
 
                 min_eval = min(min_eval, next_eval)
+                if double_move and min_eval == next_eval:
+                    best_move = move
                 beta = min(beta, next_eval)
                 if beta <= alpha:
                     break  
-            return min_eval
+            if double_move:
+                return min_eval, best_move
+            else:  
+                return min_eval, None
