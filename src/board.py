@@ -37,6 +37,10 @@ class BoardAction(Enum):
     REMOVE_RING = "Remove Ring"
 
 class Board:
+    """
+    This class represents a hexagonal board for a game. It provides methods for initializing, managing, and interacting with the board's state, including placing pieces, performing moves, validating moves, and rendering the board.
+    """
+
     def __init__(self, x_offset=None, y_offset=None, radius=None, matrix=None):
         self.sizeX = 11
         self.sizeY = 19
@@ -68,6 +72,10 @@ class Board:
         return "\n".join(" ".join(str(cell) for cell in row) for row in self.matrix)
 
     def to_dict(self):
+        """
+        Converts the board object into a dictionary representation.
+        """
+        
         return {
             "sizeX": self.sizeX,
             "sizeY": self.sizeY,
@@ -87,6 +95,9 @@ class Board:
     
     @classmethod
     def from_dict(cls, data):
+        """
+        Creates an instance of the class from a dictionary representation.
+        """
         board = cls(
             x_offset=data["x_offset"],
             y_offset=data["y_offset"],
@@ -108,6 +119,13 @@ class Board:
 
 
     def calculate_offsets(self):
+        """
+        Calculate and set the offsets required to center the board on the screen.
+        This method computes the horizontal and vertical offsets needed to position
+        the board in the center of the screen based on the board's dimensions and
+        the screen size. 
+        """
+
         board_width = (self.sizeX-1) * 2 * self.radius  # Width based on hex spacing
         board_height = (self.sizeY-1) * math.sqrt(3) * self.radius * 0.7# Height based on row spacing
 

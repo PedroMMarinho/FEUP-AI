@@ -4,14 +4,24 @@ from config import LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, CADET_BLUE, WHITE
 from states.state import State
 from ui import draw_text
 from button import ClickButton
-
+import os
+import json
 
 class GameOver(State):
 
-    def __init__(self, game, winner=None):
+    def __init__(self, game, winner=None,player_moves=None,start_game_time=None,p1_rings=None, p2_rings=None):
         super().__init__(game)
         self.winner = winner
+        self.player_moves = player_moves
+        self.start_game_time = start_game_time
+        self.p1_rings = p1_rings
+        self.p2_rings = p2_rings
         self.buttons = [
+            ClickButton("Export game",SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 + 3*BUTTONS_HEIGHT + 130,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
+                action=lambda: self.export_to_file()),
             ClickButton("Back to menu", 
                 SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 + BUTTONS_HEIGHT + 60,
                 BUTTONS_HEIGHT, BUTTONS_WIDTH,
@@ -41,4 +51,28 @@ class GameOver(State):
             
         #Buttons
         super().draw()
+
+    def export_to_file(self):
+        dic = {}
+        dic['player_moves'] = self.player_moves
+        dic['game_time']  = (pygame.time.get_ticks() - self.start_game_time) / 1000
+        dic['rings'] = {'Player 1': self.p1_rings, 'Player 2': self.p2_rings}
+
+        if os.path.exists("src/json/saves.json"):
+            with open("src/json/saves.json", "r") as file:
+                try:
+                    data = json.load(file)
+                except json.JSONDecodeError:
+                    data = []  # If file is empty, start with an empty list
+        else:
+            data = []
+        data.append(dic)
+        with open("src/json/saves.json", "w") as file:
+            json.dump(data,file,indent=4)
+
+        self.game.change_state("menu")
+        
+
+
+    
 
