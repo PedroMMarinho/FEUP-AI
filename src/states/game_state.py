@@ -149,7 +149,8 @@ class GameState:
             if event.button == 1:
                 self.hint_move = None
                 if self.active_connect5:
-                    self.handle_action(seq=self.valid_connect5)
+                    if self.valid_connect5 != []:   
+                        self.handle_action(seq=self.valid_connect5)
                 else:
                     self.handle_action(pos=event.pos)
                
@@ -441,7 +442,7 @@ class GameState:
         - 27 points for four consecutive pieces in a line.
         - 81 points for five or more consecutive pieces in a line.
         """
-        opponent = (self.player == 1) + 1
+        opponent = 1 if (self.player == 2) else 2
         score_current_player = 1*self.inline_equals_n(1, self.player) + 3*self.inline_equals_n(2, self.player) + 9*self.inline_equals_n(3, self.player) + 27*self.inline_equals_n(4, self.player) + 81*self.inline_five_or_more(self.player)
         score_opponent = 1*self.inline_equals_n(1, opponent) + 3*self.inline_equals_n(2, opponent) + 9*self.inline_equals_n(3, opponent) + 27*self.inline_equals_n(4, opponent) + 81*self.inline_five_or_more(opponent)
         return score_current_player - score_opponent

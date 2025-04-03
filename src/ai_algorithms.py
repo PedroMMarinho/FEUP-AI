@@ -152,10 +152,8 @@ class MiniMax:
 
     def minimax_alpha_beta(state, depth, alpha, beta, maximizing, prev_eval=None, streak=0):
         eval = state.evaluate()  # Evaluate at every step
-
         if depth == 0 or state.check_game_over():
             return eval  # Terminal node, return eval
-
         if maximizing:
             max_eval = float('-inf')
             for move in state.legal_moves():
