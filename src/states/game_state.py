@@ -123,10 +123,6 @@ class GameState:
 
         simulated_state = copy.deepcopy(self)
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
-            if self.bot1_mode == "MinMax":
-                (move,time) = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
-                self.ai_time = timeTaken
-
             if self.bot1_mode == "MiniMax":
                 move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
                 self.ai_time = timeTaken
@@ -161,7 +157,7 @@ class GameState:
                             continue
                         self.handle_action(pos=move_2)
             else:
-                (self,time) = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
                 self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
                 
 
@@ -265,9 +261,10 @@ class GameState:
                 self.board.remove_ring_phase = True
                 self.active_connect5 = False
                 self.valid_connect5 = []
+                newLine = []
                 for i in range(len(seq)):
-                    seq[i] = self.board.vertices[seq[i]]  
-                self.add_move_to_list("remove_line", seq)
+                    newLine.append(self.board.vertices[seq[i]]) 
+                self.add_move_to_list("remove_line", newLine)
                 self.turn_time = pygame.time.get_ticks()
             else: 
                 if self.board.num_rings1 == self.board.num_rings2: 
