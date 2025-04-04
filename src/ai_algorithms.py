@@ -86,7 +86,7 @@ class MonteCarlo:
         # print(f"VV: {best_node.visits, best_node.wins}")
         # for child in root_node.children:
             #  print(f"{child}\n")
-        return best_node.state  # Return the best state (next move)
+        return (best_node.state,time_limit)  # Return the best state (next move)
     
 
     def simulate(state):
@@ -147,7 +147,7 @@ class MiniMax:
         end = time.time()
         while end - start < 1: # Min 1 sec play
             end = time.time()
-        return best_move
+        return (best_move, end - start)
 
 
     def minimax_alpha_beta(state, depth, alpha, beta, maximizing, prev_eval=None, streak=0):
