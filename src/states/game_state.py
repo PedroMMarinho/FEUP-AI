@@ -125,11 +125,11 @@ class GameState:
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MinMax":
                 (move,time) = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
-                self.ai_time = time
+                self.ai_time = timeTaken
 
             if self.bot1_mode == "MiniMax":
                 move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
-                self.ai_time = time
+                self.ai_time = timeTaken
 
                 if not stop_flag():
                     if self.active_connect5:
