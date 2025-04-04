@@ -93,7 +93,6 @@ class GameState:
             for key, value in data["line5"].items()
         }
 
-        print(f"LINE%: {line5}")
 
         state = cls(
             mode=GameMode(data["game_mode"]),
@@ -171,10 +170,7 @@ class GameState:
                     self.handle_action(pos=event.pos)
                
             if event.button == 3 and self.active_connect5: # Select markers to remove (change direction)
-                #print("RIGHT CLICK")
-                #print(f"SELCT SEQ: {self.selected_sequence}")
                 if self.selected_sequence != None and len(self.possible_sequences) > 1:
-                    #print(f"POSSIBLE SQ {self.possible_sequences}")
                     sequence_index = self.possible_sequences.index(self.selected_sequence)
                     next_index = (sequence_index + 1) % len(self.possible_sequences)
                     self.selected_sequence = self.possible_sequences[next_index]
@@ -189,12 +185,10 @@ class GameState:
                         self.valid_connect5 = self.selected_sequence[start_index:start_index + 5] # TODO: Change to 5
 
                         if len(self.selected_sequence) % 2 == 1 and sequence_index == len(self.selected_sequence) // 2:
-                            #print(f"Appending case impar -- Idx {sequence_index} | Seq {self.selected_sequence}")
                             self.possible_sequences.append(self.selected_sequence[sequence_index:])
 
                     
         if event.type == pygame.MOUSEMOTION and self.board.phase == BoardPhase.GAME:
-            #print(self.last_hovered_point, self.selected_sequence, self.active_connect5, self.possible_sequences)
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if not self.board.marker_placed and not self.board.remove_ring_phase: # Show ring moves when hover
                 for (valid_x,valid_y) in self.valid_moves:
@@ -210,9 +204,7 @@ class GameState:
                     possible_sequences = []
                     enter = False
                     for sequences in self.line5.values():
-                        #print(f"SEQ1: {sequences} || MOUSE: {mouse_x,mouse_y}")
                         for sequence in sequences:
-                            #print(f"SEQ2: {sequence}")
                             for (x,y) in sequence:
                                 if self.is_within_hitbox(mouse_x, mouse_y, x, y):
                                     hovered_point = (x,y)
@@ -220,7 +212,6 @@ class GameState:
                                     if self.selected_sequence == None or hovered_point != self.last_hovered_point:
                                         selected_sequence = sequence
                                     self.last_hovered_point = hovered_point
-                                    #print(f"SEQUECEN : {sequence}")
                                     break  
                             if hovered_point:
                                 break
@@ -228,7 +219,6 @@ class GameState:
                         self.possible_sequences = possible_sequences
                         self.selected_sequence = selected_sequence
                         enter = True
-                    #print(self.selected_sequence)
                     if self.selected_sequence != None and enter:
                         index = self.selected_sequence.index(hovered_point)
         
@@ -241,7 +231,6 @@ class GameState:
                             self.valid_connect5 = self.selected_sequence[start_index:start_index + 5] 
 
                             if len(self.selected_sequence) % 2 == 1 and index == len(self.selected_sequence) // 2:
-                                #print(f"Appending case impar -- Idx {index} | Seq {self.selected_sequence}")
                                 self.possible_sequences.append(self.selected_sequence[index:])
 
 
@@ -318,7 +307,6 @@ class GameState:
                     self.board.ring_pos = None
                     self.change_player()
             elif self.board.remove_ring_phase:
-              #  print("REMOVE RING STATE")
                 self.board.remove_ring((x,y))
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
@@ -427,7 +415,6 @@ class GameState:
         """
 
         if self.active_connect5:
-            print(f"LINE5: {self.line5}")
             return self.create_possible_choices(self.line5, 5)
         else:
             return self.valid_moves
@@ -540,15 +527,12 @@ class GameState:
 
         boardMove = self.board.vertices[move]
         if len(self.player_moves) == 0 and self.on_edge(boardMove) :
-            print("first")
             return 10000
 
         if self.count_moves_on_edge(self.player) > 1: 
-            print("center")
             val = -(self.distance_from_center(boardMove))
             return val
         if self.on_edge(boardMove) and self.next_to_previous_move(boardMove):
-            print("next to")
             return 10000
         return -(self.distance_from_center(boardMove))
         

@@ -53,7 +53,6 @@ class BoardCreationMenu(State):
         num_rings2 = self.board.num_rings2  # Black rings
         num_markers = self.board.num_markers
 
-        print(num_rings1, num_rings2, num_markers)
         if num_markers == 51:
             if not (num_rings1 == num_rings2):
                 return "Number of Rings must be equal!"
