@@ -278,7 +278,6 @@ class Board:
         (ringPosX, ringPosY) = self.ring_pos
         (ringPosXMatrix, ringPosYMatrix) = self.vertices[(ringPosX, ringPosY)]
         (vectorX, vectorY ) = vector
-        #print(f"Vector {vector} --- rinnBegin {ringPosXMatrix, ringPosYMatrix}")
         jumped = False
         x = ringPosXMatrix + vectorX
         y = ringPosYMatrix + vectorY
@@ -290,7 +289,6 @@ class Board:
                 break
             if self.matrix[y][x] == BoardSpaceType.EMPTY.value:
                 posX, posY = self.matrix_position_to_pixel(y,x)
-                #print(f"Matrix: [{y}, {x}] | Pos: ({posX}, {posY})")
                 moves.append((posX, posY))
                 if jumped:
                     break
@@ -307,26 +305,19 @@ class Board:
         for (x,y), (col, row) in self.vertices.items():
             if self.matrix[row][col] == player:
                 for direction in [((0,-2),(0,2)), ((1,1),(-1,-1)), ((1,-1),(-1,1))]:
-                    #print(f"MTRXPOS: {col,row} | PLAYER {player} | DIRECTION: {direction}")
                     visited.setdefault(direction, set())
                     if (col,row) in visited[direction]:
-                      #  print("A")
                         continue
                     else:
-                       # print("B")
                         visited[direction].add((col,row))
                         line = []
                         line.append((x,y))
-                       # print(f"APENDING TO LINE FIRST: {col,row}")
                         for (vectorX, vectorY) in direction:
                             c = col + vectorX
                             r = row + vectorY
-                           # print(f"DIRECTION: {vectorX, vectorY}  |||| POS: {c,r}")
                             while c >= 0 and r>= 0 and c < self.sizeX and r < self.sizeY:
                                 if self.matrix[r][c] != player:
-                                 #   print("break")
                                     break
-                               # print(f"APENDING TO LINE: {c,r}")
                                 visited[direction].add((c,r))
                                 line.append((self.matrix_position_to_pixel(r,c)))
 
@@ -336,9 +327,6 @@ class Board:
                         if len(line) >= n:
                             all_lines.setdefault(direction, []).append(line)
 
-        #print(f"LINE5: {all_lines}")
-       # print(f"VISITED: {visited}")
-       # print("-------------------------------")
         if len(all_lines) > 0 and n == 5 :
             self.next_action = BoardAction.REMOVE_5LINE
         return all_lines

@@ -38,15 +38,11 @@ class GameManager:
         if new_state == "customization":
             self.current_state = GameCustomizationMenu(self,*args, **kwargs)
         elif new_state == "game":
-            for i in args:
-                print (f"ARGS:{i}")
             self.ai_thread = None
             self.ai_thinking = False
             self.stop_ai = False
             self.current_state = Game(self,*args, **kwargs)
         elif new_state == "game_over":
-            for i in args:
-                print (f"ARGS:{i}")
             self.current_state = GameOver(self,*args, **kwargs)
         elif new_state == "initial_board_customization":
             self.current_state = BoardCustomizationMenu(self)

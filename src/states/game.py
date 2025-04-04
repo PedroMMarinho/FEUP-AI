@@ -139,7 +139,6 @@ class Game(State):
                     pygame.gfxdraw.aacircle(self.game.screen, x, y, 16, (233, 52, 52))  # Red outline
                     pygame.draw.circle(self.game.screen, (233, 52, 52), (x, y), 14 ,5)
             else: 
-                print("DRAW HINT")
                 pygame.gfxdraw.aacircle(self.game.screen, self.state.hint_move[0], self.state.hint_move[1], 14, (233, 52, 52))  # Red outline
                 pygame.draw.circle(self.game.screen, (233, 52, 52), self.state.hint_move, 12 ,5)
 

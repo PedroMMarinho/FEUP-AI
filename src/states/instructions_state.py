@@ -9,6 +9,14 @@ class InstructionsState(State):
 
     def __init__(self, game):
         super().__init__(game)
+        self.buttons = [
+            ClickButton("Back", 
+                BUTTONS_WIDTH // 6 - 10, 710,
+                BUTTONS_HEIGHT, BUTTONS_WIDTH,
+                FONT,
+                LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
+                action=lambda: self.game.go_back())
+        ]
 
     def draw(self):
         screen = self.game.screen
@@ -27,7 +35,7 @@ class InstructionsState(State):
             ("Key Points", "Think ahead and anticipate marker flips.\nDisrupt your opponent's potential rows.\nRing removal limits your future moves.\nIt is the third row that counts.")
         ]
 
-        y_offset = 120  # Start drawing the instructions below the title
+        y_offset = 100  # Start drawing the instructions below the title
 
         for topic, content in instructions_text:
             # Draw the topic with STEEL_BLUE color and bold style
@@ -39,15 +47,6 @@ class InstructionsState(State):
             for line in lines:
                 draw_text(screen, line.strip(), small_font, BLACK, (SCREEN_WIDTH - small_font.size(line.strip())[0]) // 2, y_offset)
                 y_offset += small_font.get_height() + 10  # Add space between lines
-        
-        # Back button to return to the main menu (centered at the bottom)
-        self.buttons.append(  
-                      ClickButton("Back", 
-                        BUTTONS_WIDTH // 6, y_offset -20,
-                        BUTTONS_HEIGHT, BUTTONS_WIDTH,
-                        FONT,
-                        LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        action=lambda: self.game.go_back())
-                    )
+            y_offset += 15
         #buttons
         super().draw()
