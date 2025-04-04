@@ -16,10 +16,10 @@ class GameCustomizationMenu(State):
         self.back_button = None
         self.gameMode = gameMode
         self.board = Board()
-        self.bot1_mode = "MinMax"
-        self.bot2_mode = "MinMax"
-        self.bot1_minMax = 2
-        self.bot2_minMax = 2
+        self.bot1_mode = "MiniMax"
+        self.bot2_mode = "MiniMax"
+        self.bot1_MiniMax = 2
+        self.bot2_MiniMax = 2
         self.bot1_monteCarlo = 5
         self.bot2_monteCarlo = 5
         self.start_piece = "White"
@@ -58,12 +58,12 @@ class GameCustomizationMenu(State):
             case GameMode.PLAYER_VS_AI:
                 self.buttons.extend([
                     ClickButton(
-                        "MinMax", 
+                        "MiniMax", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - 2 * BUTTONS_HEIGHT - 100,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         SELECT_CYAN, WHITE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_ai_mode(1,"MinMax"), selected=True, group="ALG_IA",
+                        lambda: self.change_ai_mode(1,"MiniMax"), selected=True, group="ALG_IA",
                         alt_button_color=LIGHT_CYAN, alt_text_color=STEEL_BLUE),
                     ClickButton(
                         "-", 
@@ -71,14 +71,14 @@ class GameCustomizationMenu(State):
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(1,"-")),
+                        lambda: self.change_MiniMax_depth(1,"-")),
                     ClickButton(
                         "+", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2 + 4*BUTTONS_WIDTH/6, 160 + 2 * BUTTONS_HEIGHT,
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(1,"+")),
+                        lambda: self.change_MiniMax_depth(1,"+")),
                     ClickButton(
                         "MonteCarlo", 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - 2 * BUTTONS_HEIGHT - 100,
@@ -117,7 +117,7 @@ class GameCustomizationMenu(State):
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("game", mode=self.gameMode, player=self.start_piece , bot1_mode=self.bot1_mode,
-                                                              bot1_difficulty=self.bot1_minMax if self.bot1_mode == "MinMax" else self.bot1_monteCarlo)),
+                                                              bot1_difficulty=self.bot1_MiniMax if self.bot1_mode == "MiniMax" else self.bot1_monteCarlo)),
                     ClickButton(
                         "Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 505 + 2 * BUTTONS_HEIGHT,
@@ -137,12 +137,12 @@ class GameCustomizationMenu(State):
             case GameMode.AI_VS_AI:
                 self.buttons.extend([ 
                     ClickButton(
-                        "MinMax", 
+                        "MiniMax", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - 2 * BUTTONS_HEIGHT - 100,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         SELECT_CYAN, WHITE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_ai_mode(1,"MinMax"), selected=True, group="ALG_IA1",
+                        lambda: self.change_ai_mode(1,"MiniMax"), selected=True, group="ALG_IA1",
                         alt_button_color=LIGHT_CYAN, alt_text_color=STEEL_BLUE),
                     ClickButton(
                         "-", 
@@ -150,14 +150,14 @@ class GameCustomizationMenu(State):
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(1,"-")),
+                        lambda: self.change_MiniMax_depth(1,"-")),
                     ClickButton(
                         "+", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2 + 4*BUTTONS_WIDTH/6, 160 + 2 * BUTTONS_HEIGHT,
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(1,"+")),
+                        lambda: self.change_MiniMax_depth(1,"+")),
                     ClickButton(
                         "MonteCarlo", 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2 - 2 * BUTTONS_HEIGHT - 100,
@@ -181,12 +181,12 @@ class GameCustomizationMenu(State):
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         lambda: self.change_montecarlo_time(1,"+")),
                     ClickButton(
-                        "MinMax", 
+                        "MiniMax", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2,
                         BUTTONS_HEIGHT, BUTTONS_WIDTH,
                         FONT,
                         SELECT_CYAN, WHITE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_ai_mode(2,"MinMax"), selected=True, group="ALG_IA2",
+                        lambda: self.change_ai_mode(2,"MiniMax"), selected=True, group="ALG_IA2",
                         alt_button_color=LIGHT_CYAN, alt_text_color=STEEL_BLUE),
                     ClickButton(
                         "-", 
@@ -194,14 +194,14 @@ class GameCustomizationMenu(State):
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(2,"-")),
+                        lambda: self.change_MiniMax_depth(2,"-")),
                     ClickButton(
                         "+", 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH // 2 + 4*BUTTONS_WIDTH/6, 260 + 4 * BUTTONS_HEIGHT,
                         4*BUTTONS_HEIGHT/6, BUTTONS_WIDTH/6,
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
-                        lambda: self.change_minmax_depth(2,"+")),
+                        lambda: self.change_MiniMax_depth(2,"+")),
                     ClickButton(
                         "MonteCarlo", 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH // 2, SCREEN_HEIGHT // 2 - BUTTONS_HEIGHT // 2,
@@ -231,8 +231,8 @@ class GameCustomizationMenu(State):
                         FONT,
                         LIGHT_CYAN, STEEL_BLUE, POWER_BLUE, WHITE, CADET_BLUE, CADET_BLUE,
                         action=lambda: self.game.change_state("game", mode=self.gameMode, bot1_mode=self.bot1_mode, bot2_mode=self.bot2_mode,
-                                                              bot1_difficulty=self.bot1_minMax if self.bot1_mode == "MinMax" else self.bot1_monteCarlo,
-                                                              bot2_difficulty=self.bot2_minMax if self.bot2_mode == "MinMax" else self.bot2_monteCarlo)),
+                                                              bot1_difficulty=self.bot1_MiniMax if self.bot1_mode == "MiniMax" else self.bot1_monteCarlo,
+                                                              bot2_difficulty=self.bot2_MiniMax if self.bot2_mode == "MiniMax" else self.bot2_monteCarlo)),
                     ClickButton(
                         "Custom Init Board", 
                         SCREEN_WIDTH // 2 - BUTTONS_WIDTH // 2, 505 + 2 * BUTTONS_HEIGHT,
@@ -262,17 +262,17 @@ class GameCustomizationMenu(State):
         else:
             self.start_piece = "White"
 
-    def change_minmax_depth(self, bot, increment):
+    def change_MiniMax_depth(self, bot, increment):
         if bot == 1:
-            if increment == "+" and self.bot1_minMax < 10:
-                self.bot1_minMax +=1
-            elif increment == "-" and self.bot1_minMax > 1:
-                self.bot1_minMax -=1
+            if increment == "+" and self.bot1_MiniMax < 10:
+                self.bot1_MiniMax +=1
+            elif increment == "-" and self.bot1_MiniMax > 1:
+                self.bot1_MiniMax -=1
         else:
-            if increment == "+" and self.bot2_minMax < 10:
-                self.bot2_minMax +=1
-            elif increment == "-" and self.bot2_minMax > 1:
-                self.bot2_minMax -=1 
+            if increment == "+" and self.bot2_MiniMax < 10:
+                self.bot2_MiniMax +=1
+            elif increment == "-" and self.bot2_MiniMax > 1:
+                self.bot2_MiniMax -=1 
                 
     def change_montecarlo_time(self, bot, increment):
         if bot == 1:
@@ -301,8 +301,8 @@ class GameCustomizationMenu(State):
                 
                 draw_text(screen,"Depth",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_minMax),FONT,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,str(self.bot1_MiniMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_MiniMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_MiniMax))[1] // 2)
 
                 draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
@@ -316,8 +316,8 @@ class GameCustomizationMenu(State):
                 
                 draw_text(screen,"Depth",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot1_minMax),FONT,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_minMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,str(self.bot1_MiniMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot1_MiniMax))[0] // 2, 155 + 2 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_MiniMax))[1] // 2)
 
                 draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 115 + 2 * BUTTONS_HEIGHT)
@@ -330,8 +330,8 @@ class GameCustomizationMenu(State):
                 
                 draw_text(screen,"Depth",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str("Depth"))[0] // 2, 215 + 4 * BUTTONS_HEIGHT)
-                draw_text(screen,str(self.bot2_minMax),FONT,(60, 100, 140), 
-                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot2_minMax))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_minMax))[1] // 2)
+                draw_text(screen,str(self.bot2_MiniMax),FONT,(60, 100, 140), 
+                          SCREEN_WIDTH // 5 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size(str(self.bot2_MiniMax))[0] // 2, 255 + 4 * BUTTONS_HEIGHT + FONT.size(str(self.bot1_MiniMax))[1] // 2)
 
                 draw_text(screen,"Time(s)",FONT,(60, 100, 140), 
                         SCREEN_WIDTH // 5 * 4 - BUTTONS_WIDTH //2 + 3*BUTTONS_WIDTH/6 - FONT.size("Time(s)")[0] // 2, 215 + 4 * BUTTONS_HEIGHT)

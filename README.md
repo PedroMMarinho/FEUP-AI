@@ -98,4 +98,18 @@ Yinsh features a simple and intuitive design, making it easy for players to navi
 
 Here is an example of the gameplay:
 
+![gameplay](assets/gameplay.gif)  
+
+After finishing a game, you have the option to **Export the Game**, generating a detailed summary that includes:  
+- Total game duration  
+- Time taken for each move  
+- The sequence of actions  
+- The number of rings remaining at the end of the game  
+
+![alt text](assets/end-game.png)  
+
+If you wish to save your current game state and continue later, you can exit the game and restart it at any time. Upon returning, a new option will appear, allowing you to **resume your previous game** seamlessly.  
+
+
+![alt text](assets/save-game.gif)  
 

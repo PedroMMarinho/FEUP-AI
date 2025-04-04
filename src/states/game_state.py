@@ -4,6 +4,7 @@ from board import BoardPhase
 from mode import GameMode
 import copy
 from ai_algorithms import MonteCarlo, MiniMax
+import time
 
 class GameState:
     """
@@ -125,23 +126,40 @@ class GameState:
             if self.bot1_mode == "MinMax":
                 (move,time) = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
                 self.ai_time = time
+
+            if self.bot1_mode == "MiniMax":
+                move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                self.ai_time = time
+
                 if not stop_flag():
                     if self.active_connect5:
                         self.handle_action(seq=move)
                     else:
                         self.handle_action(pos=move)
+
+                    if move_2:
+                        start = time.time()
+                        while time.time() - start < 1:
+                            continue
+                        self.handle_action(pos=move_2)
             else:
-                (self,time) = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
                 self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
         elif self.game_mode == GameMode.AI_VS_AI:
-            if self.bot2_mode == "MinMax":
-                (move,time) = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
-                self.ai_time = time
+            if self.bot2_mode == "MiniMax":
+                move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                self.ai_time = timeTaken
                 if not stop_flag():
                     if self.active_connect5:
                         self.handle_action(seq=move)
                     else:
                         self.handle_action(pos=move)
+
+                    if move_2:
+                        start = time.time()
+                        while time.time() - start < 1:
+                            continue
+                        self.handle_action(pos=move_2)
             else:
                 (self,time) = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
                 self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
@@ -257,7 +275,6 @@ class GameState:
                 else:
                     self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
                 self.game_over = True
-                
         else:
             x,y = pos
             if self.is_ai_turn():
