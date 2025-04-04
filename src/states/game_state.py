@@ -254,9 +254,10 @@ class GameState:
                 self.board.remove_ring_phase = True
                 self.active_connect5 = False
                 self.valid_connect5 = []
+                temp_seq = []
                 for i in range(len(seq)):
-                    seq[i] = self.board.vertices[seq[i]]  
-                self.player_moves.append(("remove_line",seq, (pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                    temp_seq.append(self.board.vertices[seq[i]])  
+                self.player_moves.append(("remove_line",temp_seq, (pygame.time.get_ticks() - self.turn_time) / 1000 ))
                 self.turn_time = pygame.time.get_ticks()
             else: 
                 if self.board.num_rings1 == self.board.num_rings2: 
@@ -426,6 +427,7 @@ class GameState:
         """
 
         if self.active_connect5:
+            print(f"LINE5: {self.line5}")
             return self.create_possible_choices(self.line5, 5)
         else:
             return self.valid_moves
