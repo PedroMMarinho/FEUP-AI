@@ -69,7 +69,6 @@ class MonteCarlo:
         if stop_flag():
             return None
         best_node = max(root_node.children, key=lambda n: n.wins // n.visits if n.visits > 0 else n.visits)
-        # for child in root_node.children:
         return best_node.state  # Return the best state (next move)
     
 
@@ -133,10 +132,11 @@ class MiniMax:
         end = time.time()
         while end - start < 1: # Min 1 sec play
             end = time.time()
+
         if best_move_2:
-            return best_move, best_move_2
+            return best_move, best_move_2,end - start
         else:
-            return best_move, None
+            return best_move, None,end - start
 
 
     def minimax_alpha_beta(state, depth, alpha, beta, maximizing, double_move=False, prev_eval=None, streak=0):

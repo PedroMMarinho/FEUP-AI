@@ -41,6 +41,7 @@ class GameState:
         self.player_moves = [] # list of all moves done in the game
         self.start_time = pygame.time.get_ticks()
         self.turn_time = pygame.time.get_ticks()
+        self.ai_time = 0
 
 
     def __str__(self):
@@ -122,7 +123,9 @@ class GameState:
         simulated_state = copy.deepcopy(self)
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MiniMax":
-                move, move_2 = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                self.ai_time = timeTaken
+
                 if not stop_flag():
                     if self.active_connect5:
                         self.handle_action(seq=move)
@@ -136,9 +139,11 @@ class GameState:
                         self.handle_action(pos=move_2)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
+                self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
         elif self.game_mode == GameMode.AI_VS_AI:
             if self.bot2_mode == "MiniMax":
-                move, move_2 = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                self.ai_time = timeTaken
                 if not stop_flag():
                     if self.active_connect5:
                         self.handle_action(seq=move)
@@ -152,6 +157,8 @@ class GameState:
                         self.handle_action(pos=move_2)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
+                self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
+                
 
         return self
     
@@ -243,10 +250,11 @@ class GameState:
                 self.board.remove_ring_phase = True
                 self.active_connect5 = False
                 self.valid_connect5 = []
-                temp_seq = []
+                newLine = []
                 for i in range(len(seq)):
-                    temp_seq.append(self.board.vertices[seq[i]])  
-                self.player_moves.append(("remove_line",temp_seq, (pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                    newLine.append(self.board.vertices[seq[i]]) 
+                self.add_move_to_list("remove_line", newLine)
+
                 self.turn_time = pygame.time.get_ticks()
             else: 
                 if self.board.num_rings1 == self.board.num_rings2: 
@@ -278,8 +286,8 @@ class GameState:
         """Handles a player's move in the game based on the current phase and state of the board."""
         if self.board.phase == BoardPhase.PREP:
             self.board.perform_move((x,y), (0,0), self.player)
+            self.add_move_to_list("place_ring",self.board.vertices[(x,y)])
             self.change_player()
-            self.player_moves.append(("place_ring",self.board.vertices[(x,y)], ( pygame.time.get_ticks()  - self.turn_time) / 1000 ))
             self.turn_time = pygame.time.get_ticks()
 
         elif self.board.phase == BoardPhase.GAME:
@@ -288,9 +296,9 @@ class GameState:
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
-                self.player_moves.append(("place_marker",self.board.vertices[(x,y)], ( pygame.time.get_ticks() - self.turn_time ) / 1000 ))
+                self.add_move_to_list("place_marker",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
-                if self.board.num_markers < 0: 
+                if self.board.num_markers < 0: # TODO add not simul ?? 
                     if self.board.num_rings1 == self.board.num_rings2: 
                         self.winner = 0
                     else:
@@ -300,7 +308,7 @@ class GameState:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
                 self.verify_5line()
-                self.player_moves.append(("move_ring",self.board.vertices[(x,y)],(pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                self.add_move_to_list("move_ring",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
                 if not self.active_connect5:
                     self.board.marker_placed = False
@@ -311,7 +319,7 @@ class GameState:
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
                 self.board.ring_pos = None
-                self.player_moves.append(("remove_ring",self.board.vertices[(x,y)],( pygame.time.get_ticks() - self.turn_time) / 1000 ))
+                self.add_move_to_list("remove_ring",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
                 if self.player == 1:
                     self.board.num_rings1 -= 1
@@ -326,6 +334,13 @@ class GameState:
                 if self.line5_end_turn:
                     self.change_player()
 
+
+    def add_move_to_list(self, type, move):
+        if self.is_ai_turn():
+            time = self.ai_time
+        else: 
+            time = (pygame.time.get_ticks() - self.turn_time ) / 1000 
+        self.player_moves.append((type,move,time,self.player))
 
 
 

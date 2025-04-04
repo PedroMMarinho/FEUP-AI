@@ -83,7 +83,7 @@ class Game(State):
         if new_state is not None:
             self.state = new_state
         else:
-            self.game.change_state("game_over", winner=self.state.winner)
+            self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, start_game_time=self.state.start_time, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2 )
         self.game.ai_thinking = False 
 
 
