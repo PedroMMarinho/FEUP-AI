@@ -20,7 +20,7 @@ class GameCustomizationMenu(State):
         self.bot2_mode = "MiniMax"
         self.bot1_MiniMax = 2
         self.bot2_MiniMax = 2
-        self.bot1_monteCarlo = 5
+        self.bot1_monteCarlo = 0.6
         self.bot2_monteCarlo = 5
         self.start_piece = "White"
         self.customize_initial_board_button = None
