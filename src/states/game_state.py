@@ -42,6 +42,8 @@ class GameState:
         self.start_time = pygame.time.get_ticks()
         self.turn_time = pygame.time.get_ticks()
         self.ai_time = 0
+        self.init_game = True
+
 
 
     def __str__(self):
@@ -77,6 +79,7 @@ class GameState:
             "bot1_difficulty": self.bot1_difficulty,
             "bot2_mode": self.bot2_mode,
             "bot2_difficulty": self.bot2_difficulty,
+            "init_game": self.init_game,
         }
 
     @classmethod
@@ -111,6 +114,7 @@ class GameState:
         state.line5 = line5
         state.active_connect5 = data["active_connect5"]
         state.line5_end_turn = data["line5_end_turn"]
+        state.init_game = data["init_game"]
         return state
 
 
@@ -119,7 +123,12 @@ class GameState:
         """Executes the AI's turn based on the game mode and bot configurations.""" 
         if self.game_over or stop_flag():
             return None
-
+        if self.init_game:
+            self.init_game = False
+            self.line5_end_turn = False
+            self.verify_5line()
+            if self.active_connect5:
+                self.valid_moves= []
         simulated_state = copy.deepcopy(self)
         if self.game_mode == GameMode.PLAYER_VS_AI or (self.game_mode == GameMode.AI_VS_AI and self.player == 1):
             if self.bot1_mode == "MiniMax":
@@ -139,7 +148,8 @@ class GameState:
                         self.handle_action(pos=move_2)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot1_difficulty,stop_flag=stop_flag)
-                self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
+                if not stop_flag():
+                    self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
         elif self.game_mode == GameMode.AI_VS_AI:
             if self.bot2_mode == "MiniMax":
                 move, move_2,timeTaken = MiniMax.best_move(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
@@ -157,7 +167,8 @@ class GameState:
                         self.handle_action(pos=move_2)
             else:
                 self = MonteCarlo.monte_carlo(simulated_state,self.bot2_difficulty,stop_flag=stop_flag)
-                self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
+                if not stop_flag():
+                    self.player_moves[-1] = (self.player_moves[-1][0],self.player_moves[-1][1],self.bot1_difficulty)
                 
 
         return self
@@ -167,6 +178,13 @@ class GameState:
     def handle_events(self,event):
         """Handles various game events such as mouse clicks and mouse movements."""
         self.valid_ring_moves = []
+        if self.init_game:
+            self.init_game = False
+            self.line5_end_turn = False
+            self.verify_5line()
+            if self.active_connect5:
+                self.valid_moves= []
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 self.hint_move = None
@@ -184,12 +202,12 @@ class GameState:
                     point_index = self.selected_sequence.index(self.last_hovered_point)
 
 
-                    if len(self.selected_sequence) <= 5: # TODO: Change to 5
+                    if len(self.selected_sequence) <= 5:
                         self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
                     else:
                         # Try to center around hovered point
-                        start_index = max(0, min(point_index - 1, len(self.selected_sequence) - 5)) # TODO: Change to 5
-                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 5] # TODO: Change to 5
+                        start_index = max(0, min(point_index - 1, len(self.selected_sequence) - 5))
+                        self.valid_connect5 = self.selected_sequence[start_index:start_index + 5]
 
                         if len(self.selected_sequence) % 2 == 1 and sequence_index == len(self.selected_sequence) // 2:
                             self.possible_sequences.append(self.selected_sequence[sequence_index:])
@@ -254,14 +272,7 @@ class GameState:
                 for i in range(len(seq)):
                     newLine.append(self.board.vertices[seq[i]]) 
                 self.add_move_to_list("remove_line", newLine)
-
                 self.turn_time = pygame.time.get_ticks()
-            else: 
-                if self.board.num_rings1 == self.board.num_rings2: 
-                    self.winner = 0
-                else:
-                    self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
-                self.game_over = True
         else:
             x,y = pos
             if self.is_ai_turn():
@@ -291,19 +302,13 @@ class GameState:
             self.turn_time = pygame.time.get_ticks()
 
         elif self.board.phase == BoardPhase.GAME:
-            if not self.board.marker_placed and not self.board.remove_ring_phase:
+            if not self.board.marker_placed and not self.board.remove_ring_phase:        
                 self.board.perform_move((x,y), (0,0), self.player)
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
                 self.add_move_to_list("place_marker",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
-                if self.board.num_markers < 0: # TODO add not simul ?? 
-                    if self.board.num_rings1 == self.board.num_rings2: 
-                        self.winner = 0
-                    else:
-                        self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
-                    self.game_over = True
             elif not self.active_connect5 and not self.board.remove_ring_phase:
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
@@ -311,6 +316,12 @@ class GameState:
                 self.add_move_to_list("move_ring",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
                 if not self.active_connect5:
+                    if self.board.num_markers <= 0:
+                        if self.board.num_rings1 == self.board.num_rings2: 
+                            self.winner = 0
+                        else:
+                            self.winner = 1 if self.board.num_rings1 < self.board.num_rings2 else 2
+                        self.game_over = True
                     self.board.marker_placed = False
                     self.board.ring_pos = None
                     self.change_player()
@@ -397,7 +408,7 @@ class GameState:
             return True
         if self.board.phase == BoardPhase.GAME and (self.game_type == "Blitz" and self.board.num_rings2 == 4 or self.game_type == "Normal" and self.board.num_rings2 == 2 ):
             return True
-        if self.board.num_markers == 0: 
+        if self.board.num_markers <= 0 and not self.active_connect5: 
             return True
         return False
     

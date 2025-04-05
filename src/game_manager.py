@@ -11,6 +11,7 @@ from states.board_creation_state import BoardCreationMenu
 from states.game_over import GameOver
 from board import Board
 from json_actions import load_game, save_game, clear_game
+from mode import GameMode
 
 class GameManager:
     def __init__(self):
@@ -71,7 +72,7 @@ class GameManager:
 
     def load_game_state(self):
         loaded_state = load_game("src/json/game_state.json")
-        game_mode = loaded_state['game_mode']
+        game_mode = GameMode(loaded_state['game_mode'])
         self.change_state("game", game_mode)
         self.current_state.state = GameState.from_dict(loaded_state,Board)
     
