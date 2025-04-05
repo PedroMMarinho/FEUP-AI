@@ -63,7 +63,7 @@ class MonteCarlo:
             # Backpropagation phase: Update the node statistics
             while node:
                 node.visits += 1
-                node.wins += result  # result could be 1 for win, 0 for loss
+                node.wins += result  # result could be 1 for win, 0 for loss/draw
                 node = node.parent
             counter += 1
         if stop_flag():
@@ -77,9 +77,8 @@ class MonteCarlo:
         while not state.check_game_over():
             legal_moves = state.legal_moves()
 
-            # If no legal moves, return a draw (or handle as necessary)
             if not legal_moves:
-                return 0  # Draw, or whatever result you define
+                return 0 
 
             # Randomly select a move
             move = random.choice(legal_moves)
@@ -134,7 +133,7 @@ class MiniMax:
         while end - start < 1: # Min 1 sec play
             end = time.time()
 
-        if best_move_2:
+        if best_move_2: # Double movement case, return both moves since they are in the same turn
             return best_move, best_move_2,end - start
         else:
             return best_move, None,end - start
@@ -175,7 +174,7 @@ class MiniMax:
                 alpha = max(alpha, next_eval)
                 if beta <= alpha:
                     break
-            if double_move:
+            if double_move: # Double movement case, return both moves since they are in the same turn
                 return max_eval, best_move
             else:  
                 return max_eval, None
@@ -209,7 +208,7 @@ class MiniMax:
                 beta = min(beta, next_eval)
                 if beta <= alpha:
                     break  
-            if double_move:
+            if double_move: # Double movement case, return both moves since they are in the same turn
                 return min_eval, best_move
             else:  
                 return min_eval, None

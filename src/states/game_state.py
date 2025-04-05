@@ -97,7 +97,6 @@ class GameState:
             for key, value in data["line5"].items()
         }
 
-
         state = cls(
             mode=GameMode(data["game_mode"]),
             board=board,
@@ -202,9 +201,9 @@ class GameState:
                     self.selected_sequence = self.possible_sequences[next_index]
                     point_index = self.selected_sequence.index(self.last_hovered_point)
 
-
+                    # Select 5 consecutive points
                     if len(self.selected_sequence) <= 5:
-                        self.valid_connect5 = self.selected_sequence  # Return all if 4 or fewer exist
+                        self.valid_connect5 = self.selected_sequence 
                     else:
                         # Try to center around hovered point
                         start_index = max(0, min(point_index - 1, len(self.selected_sequence) - 5))
@@ -303,14 +302,14 @@ class GameState:
             self.turn_time = pygame.time.get_ticks()
 
         elif self.board.phase == BoardPhase.GAME:
-            if not self.board.marker_placed and not self.board.remove_ring_phase:        
+            if not self.board.marker_placed and not self.board.remove_ring_phase: # Place marker       
                 self.board.perform_move((x,y), (0,0), self.player)
                 self.board.marker_placed = True
                 self.board.num_markers -= 1
                 self.board.ring_pos = (x,y)
                 self.add_move_to_list("place_marker",self.board.vertices[(x,y)])
                 self.turn_time = pygame.time.get_ticks()
-            elif not self.active_connect5 and not self.board.remove_ring_phase:
+            elif not self.active_connect5 and not self.board.remove_ring_phase: # Move ring
                 self.board.perform_move(self.board.ring_pos, (x,y), self.player)
                 self.line5_end_turn = True
                 self.verify_5line()
@@ -326,7 +325,7 @@ class GameState:
                     self.board.marker_placed = False
                     self.board.ring_pos = None
                     self.change_player()
-            elif self.board.remove_ring_phase:
+            elif self.board.remove_ring_phase: # Remove ring
                 self.board.remove_ring((x,y))
                 self.board.remove_ring_phase = False
                 self.board.marker_placed = False
