@@ -53,7 +53,7 @@ class BoardCreationMenu(State):
         num_rings2 = self.board.num_rings2  # Black rings
         num_markers = self.board.num_markers
 
-        if num_markers == 51:
+        if num_markers == 50:
             if not (num_rings1 == num_rings2):
                 return "Number of Rings must be equal!"
         
@@ -148,11 +148,11 @@ class BoardCreationMenu(State):
 
                 # Tool application logic
                 if tool == ToolType.BLACK_MARKER:
-                    if self.board.num_markers > 0 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                    if self.board.num_markers > 1 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
                         tool_value = BoardSpaceType.PLAYER2_MARKER.value
                         self.board.num_markers -= 1
                 elif tool == ToolType.WHITE_MARKER:
-                    if self.board.num_markers > 0 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
+                    if self.board.num_markers > 1 and self.board.matrix[row][col] == BoardSpaceType.EMPTY.value:
                         tool_value = BoardSpaceType.PLAYER1_MARKER.value
                         self.board.num_markers -= 1
                 elif tool == ToolType.BLACK_RING:

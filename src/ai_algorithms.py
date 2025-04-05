@@ -98,6 +98,7 @@ class MonteCarlo:
 class MiniMax:
 
     def best_move(state,depth,stop_flag=lambda: False):
+        best_move_2 = None
         if stop_flag():
             return None
         best_val = float('-inf')

@@ -53,7 +53,7 @@ class Game(State):
             if not self.game.ai_thinking:
                 self.start_ai_thread()
         elif self.state.game_over:
-                self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, start_game_time=self.state.start_time, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2  )
+                self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2  )
         for event in pygame.event.get():
             click = False
             if event.type == pygame.QUIT:   
@@ -83,13 +83,13 @@ class Game(State):
         if new_state is not None:
             self.state = new_state
         else:
-            self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, start_game_time=self.state.start_time, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2 )
+            self.game.change_state("game_over", winner=self.state.winner,player_moves=self.state.player_moves, p1_rings=self.state.board.num_rings1, p2_rings=self.state.board.num_rings2 )
         self.game.ai_thinking = False 
 
 
     def run_hint_logic(self):
         copy_state = copy.deepcopy(self.state)
-        self.state.hint_move, _ = MiniMax.best_move(copy_state,2,stop_flag=lambda: self.game.stop_ai)
+        self.state.hint_move,_,_ = MiniMax.best_move(copy_state,2,stop_flag=lambda: self.game.stop_ai)
         if self.game.stop_ai:  
             return
         self.game.ai_thinking = False 
