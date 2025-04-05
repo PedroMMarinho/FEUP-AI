@@ -130,7 +130,7 @@ class MiniMax:
                 best_move_2 = move_2
             alpha = max(alpha, best_val)
         end = time.time()
-        while end - start < 1: # Min 1 sec play
+        while end - start < 0: # Min 1 sec play
             end = time.time()
 
         if best_move_2:
