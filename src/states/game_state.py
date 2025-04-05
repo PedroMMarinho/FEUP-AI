@@ -39,7 +39,6 @@ class GameState:
         self.bot2_mode = bot2_mode
         self.bot2_difficulty = bot2_difficulty
         self.player_moves = [] # list of all moves done in the game
-        self.start_time = pygame.time.get_ticks()
         self.turn_time = pygame.time.get_ticks()
         self.ai_time = 0
 
@@ -77,6 +76,7 @@ class GameState:
             "bot1_difficulty": self.bot1_difficulty,
             "bot2_mode": self.bot2_mode,
             "bot2_difficulty": self.bot2_difficulty,
+            "player_moves" : self.player_moves
         }
 
     @classmethod
@@ -105,12 +105,13 @@ class GameState:
             bot2_difficulty=data["bot2_difficulty"]
         )
         state.player = data["player"]
-        state.valid_moves = data["valid_moves"]
+        state.valid_moves = list(map(tuple,data["valid_moves"]))
         state.game_over = data["game_over"]
         state.winner = data["winner"]
         state.line5 = line5
         state.active_connect5 = data["active_connect5"]
         state.line5_end_turn = data["line5_end_turn"]
+        state.player_moves = data["player_moves"]
         return state
 
 

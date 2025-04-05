@@ -9,11 +9,10 @@ import json
 
 class GameOver(State):
 
-    def __init__(self, game, winner=None,player_moves=None,start_game_time=None,p1_rings=None, p2_rings=None):
+    def __init__(self, game, winner=None,player_moves=None,p1_rings=None, p2_rings=None):
         super().__init__(game)
         self.winner = winner
         self.player_moves = player_moves
-        self.start_game_time = start_game_time
         self.p1_rings = p1_rings
         self.p2_rings = p2_rings
         self.buttons = [
@@ -55,7 +54,11 @@ class GameOver(State):
     def export_to_file(self):
         dic = {}
         dic['player_moves'] = self.player_moves
-        dic['game_time']  = (pygame.time.get_ticks() - self.start_game_time) / 1000
+        game_time = 0 
+        for move in self.player_moves: 
+            game_time += move[2]
+        
+        dic['game_time']  = game_time
         dic['rings'] = {'Player 1': self.p1_rings, 'Player 2': self.p2_rings}
 
         if os.path.exists("src/json/saves.json"):
