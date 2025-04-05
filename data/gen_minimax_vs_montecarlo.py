@@ -16,9 +16,9 @@ def analyze_game_data(json_data):
     results = []
 
     for turn in json_data:
-        turn_time = turn.get("turn_time", 0.6)  # Default to 0.05 if not present
+        turn_time = turn.get("turn_time", 16.9)  
         rings = turn.get("rings", {})
-        depth = 2  # Depth is always 1 in this case
+        depth = 3  
 
         player1_rings = rings.get("Player 1")
         player2_rings = rings.get("Player 2")

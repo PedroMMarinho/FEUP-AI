@@ -121,7 +121,7 @@ try:
     plt.legend(legend_handles, legend_labels, title="Winner", loc='upper right')
     
     # Add labels and title
-    plt.xlabel("Turn Execution Time (seconds)", fontsize=12)
+    plt.xlabel("Avg Turn Execution Time (seconds)", fontsize=12)
     plt.ylabel("Number of Games")
     plt.title("Number of Games by Execution Time and Winner (Minimax Depth)")
     plt.grid(axis='y', linestyle='--', alpha=0.5)
@@ -131,6 +131,7 @@ try:
     
     # Show the plot
     plt.tight_layout()
+    plt.savefig("data/montecarlo_vs_minimax_plot.png")  
     plt.show()
 
 except FileNotFoundError:
